@@ -1,0 +1,72 @@
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@300;400;500&display=swap");
+@import "tailwindcss";
+
+@theme {
+  --font-serif: "Cormorant Garamond", serif;
+  --font-sans: "Inter", sans-serif;
+}
+
+html, body {
+  background: linear-gradient(135deg, #0E0A0D 0%, #1B1217 100%);
+  color: #FBE9F1;
+}
+
+::selection {
+  background: rgba(245, 183, 221, 0.34);
+  color: #29111F;
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-thumb { background: #D88DA8; border-radius: 99px; }
+
+.noise {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
+}
+
+@keyframes orb {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(40px, -30px) scale(1.12); }
+}
+
+.animate-\[orb_18s_ease-in-out_infinite\] {
+  animation: orb 18s ease-in-out infinite;
+}
+
+.animate-\[orb_22s_ease-in-out_infinite_reverse\] {
+  animation: orb 22s ease-in-out infinite reverse;
+}
+
+.hero-panel {
+  position: relative;
+  isolation: isolate;
+}
+
+.hero-panel__glow {
+  position: absolute;
+  inset: -10% -10% auto auto;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(247,231,210,0.42), rgba(199,155,99,0.12) 65%);
+  filter: blur(20px);
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Accessible keyboard focus outline for interactive elements that don't
+   already define their own focus-visible ring */
+a, button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Respect the OS-level reduced-motion preference as a hard floor, in case
+   any inline/JS-driven animation slips past the useReducedMotion checks */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
