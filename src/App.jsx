@@ -70,7 +70,7 @@ import Img0808 from "./assets/IMG_0808.jpg";
 
 import {
   Cake, Heart, Gem, Baby, Sparkles, PartyPopper,
-  Phone, Mail, MapPin, Instagram, ArrowRight, Star, X, Quote,
+  Phone, Mail, MapPin, ArrowRight, Star, X, Quote,
   Menu, MessageCircle, Camera,
 } from "lucide-react";
 
