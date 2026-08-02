@@ -350,7 +350,7 @@ const reduce = useReducedMotion();
 const [done, setDone] = useState(false);
 useEffect(() => {
 const isMobile = window.innerWidth < 768;
-const t = setTimeout(() => setDone(true), reduce || isMobile ? 300 : 1900);
+const t = setTimeout(() => setDone(true), reduce ? 200 : isMobile ? 900 : 1900);
 return () => clearTimeout(t);
   }, [reduce]);
 return (
@@ -1082,10 +1082,14 @@ const [selectedService, setSelectedService] = useState(null);
 // Lenis smooth scroll — skipped on mobile and when the user prefers reduced motion
 useEffect(() => {
 const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-const isMobile = window.innerWidth < 768;
-if (prefersReduced || isMobile) return;
+if (prefersReduced) return;
 
-const lenis = new Lenis({ duration: 1.15, smoothWheel: true, lerp: 0.09 });
+const isMobile = window.innerWidth < 768;
+const lenis = new Lenis(
+isMobile
+? { duration: 0.7, smoothWheel: true, smoothTouch: true, lerp: 0.16 }
+: { duration: 1.15, smoothWheel: true, lerp: 0.09 }
+    );
 let id;
 const raf = (t) => { lenis.raf(t); id = requestAnimationFrame(raf); };
 id = requestAnimationFrame(raf);
