@@ -13,6 +13,30 @@ import Lenis from "lenis";
 import heroImg from "./assets/hero.png";
 import gallery4 from "./assets/hero.png";
 import gallery8 from "./assets/react.webp";
+import Img0752 from "./assets/IMG_0752.jpg";
+import Img0754 from "./assets/IMG_0754.jpg";
+import Img0759 from "./assets/IMG_0759.jpg";
+import Img0761 from "./assets/IMG_0761.jpg";
+import Img0762 from "./assets/IMG_0762.jpg";
+import Img0764 from "./assets/IMG_0764.jpg";
+import Img0765 from "./assets/IMG_0765.jpg";
+import Img0767 from "./assets/IMG_0767.jpg";
+import Img0774 from "./assets/IMG_0774.jpg";
+import Img0775 from "./assets/IMG_0775.jpg";
+import Img0776 from "./assets/IMG_0776.jpg";
+import Img0777 from "./assets/IMG_0777.jpg";
+import Img0782 from "./assets/IMG_0782.jpg";
+import Img0784 from "./assets/IMG_0784.jpg";
+import Img0785 from "./assets/IMG_0785.jpg";
+import Img0786 from "./assets/IMG_0786.jpg";
+import Img0792 from "./assets/IMG_0792.jpg";
+import Img0793 from "./assets/IMG_0793.jpg";
+import Img0794 from "./assets/IMG_0794.jpg";
+import Img0796 from "./assets/IMG_0796.jpg";
+import Img0800 from "./assets/IMG_0800.jpg";
+import Img0804 from "./assets/IMG_0804.jpg";
+import Img0806 from "./assets/IMG_0806.jpg";
+import Img0807 from "./assets/IMG_0807.jpg";
 import {
   Cake, Heart, Gem, Baby, Sparkles, PartyPopper,
   Phone, Mail, MapPin, Camera, ArrowRight, Star, X, Quote, Menu, MessageCircle,
@@ -35,12 +59,42 @@ const waLink = `https://wa.me/${SITE.phones[0].replace(/\D/g, "")}?text=${encode
 )}`;
 
 const SERVICES = [
-  { icon: Cake, title: "Birthday Decor", text: "Thoughtful setups that feel joyful, polished and personal from the moment guests arrive." },
-  { icon: Heart, title: "Anniversary", text: "Soft lighting, elegant florals and romantic details that make the evening feel special." },
-  { icon: Gem, title: "Proposal Setup", text: "A memorable scene designed around the emotion of the moment — calm, cinematic and beautiful." },
-  { icon: Baby, title: "Baby Shower", text: "Warm, dreamy spaces filled with gentle tones and details that feel welcoming and refined." },
-  { icon: Sparkles, title: "Haldi & Mehndi", text: "Rich colour, texture and celebration — designed to feel festive without losing elegance." },
-  { icon: PartyPopper, title: "Corporate & Launch", text: "Modern, brand-led setups that feel elevated, sharp and made to impress." },
+  {
+    icon: Cake,
+    title: "Birthday Decor",
+    text: "Thoughtful setups that feel joyful, polished and personal from the moment guests arrive.",
+    images: [Img0752, Img0754, Img0759, Img0761],
+  },
+  {
+    icon: Heart,
+    title: "Anniversary",
+    text: "Soft lighting, elegant florals and romantic details that make the evening feel special.",
+    images: [Img0762, Img0764, Img0765, Img0767],
+  },
+  {
+    icon: Gem,
+    title: "Proposal Setup",
+    text: "A memorable scene designed around the emotion of the moment — calm, cinematic and beautiful.",
+    images: [Img0774, Img0775, Img0776, Img0777],
+  },
+  {
+    icon: Baby,
+    title: "Baby Shower",
+    text: "Warm, dreamy spaces filled with gentle tones and details that feel welcoming and refined.",
+    images: [Img0782, Img0784, Img0785, Img0786],
+  },
+  {
+    icon: Sparkles,
+    title: "Haldi & Mehndi",
+    text: "Rich colour, texture and celebration — designed to feel festive without losing elegance.",
+    images: [Img0792, Img0793, Img0794, Img0796],
+  },
+  {
+    icon: PartyPopper,
+    title: "Corporate & Launch",
+    text: "Modern, brand-led setups that feel elevated, sharp and made to impress.",
+    images: [Img0800, Img0804, Img0806, Img0807],
+  },
 ];
 
 const WHY = [
@@ -72,14 +126,13 @@ const TESTIMONIALS = [
 
 // Swap these with your own imported images: import g1 from "./assets/g1.jpg"
 const GALLERY = [
-  "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?w=900&q=80",
-  "https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=900&q=80",
-  "https://images.unsplash.com/photo-1478146896981-b80fe463b330?w=900&q=80",
-  gallery4,
-  "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=900&q=80",
-  "https://images.unsplash.com/photo-1533294455009-a77b7557d2d1?w=900&q=80",
-  "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=900&q=80",
-  gallery8,
+  Img0807,
+  Img0796,
+  Img0785,
+  Img0777,
+  Img0765,
+  Img0767,
+  Img0774,
 ];
 const HERO_IMG = heroImg;
 
@@ -556,7 +609,7 @@ function Hero() {
 /* ------------------------------------------------------------------ */
 /* SERVICES                                                            */
 /* ------------------------------------------------------------------ */
-function ServiceCard({ s, i }) {
+function ServiceCard({ s, i, onSelect }) {
   const reduce = useReducedMotion();
   const ref = useRef(null);
   const [g, setG] = useState({ x: 50, y: 50, on: false });
@@ -569,13 +622,15 @@ function ServiceCard({ s, i }) {
 
   return (
     <Reveal delay={i * 0.08}>
-      <motion.div
+      <motion.button
+        type="button"
         ref={ref}
         onMouseMove={onMove}
         onMouseLeave={() => setG((p) => ({ ...p, on: false }))}
-        whileHover={{ y: -8, scale: 1.01, boxShadow: "0 24px 60px rgba(184,137,79,0.12)" }}
+        onClick={() => onSelect(s)}
+        whileHover={{ y: -8, scale: 1.01, boxShadow: "0 24px 60px rgba(214,124,191,0.12)" }}
         transition={{ type: "spring", stiffness: 220, damping: 20 }}
-        className="group relative h-full overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] p-9 backdrop-blur-xl transition-all duration-500 hover:border-[#D67CBF]/35"
+        className="group relative h-full overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] p-9 backdrop-blur-xl transition-all duration-500 hover:border-[#D67CBF]/35 focus:outline-none focus:ring-2 focus:ring-[#D67CBF]/40"
       >
         <div
           className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500"
@@ -594,12 +649,12 @@ function ServiceCard({ s, i }) {
         <h3 className="relative mt-7 font-serif text-2xl text-white">{s.title}</h3>
         <p className="relative mt-3 text-sm font-light leading-relaxed text-white/55">{s.text}</p>
         <div className="relative mt-7 h-px w-0 bg-gradient-to-r from-[#D67CBF] to-transparent transition-all duration-500 group-hover:w-full" />
-      </motion.div>
+      </motion.button>
     </Reveal>
   );
 }
 
-function Services() {
+function Services({ onSelect }) {
   return (
     <Section id="services">
       <Reveal className="text-center">
@@ -613,9 +668,70 @@ function Services() {
         </p>
       </Reveal>
       <div className="mt-16 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {SERVICES.map((s, i) => <ServiceCard key={s.title} s={s} i={i} />)}
+        {SERVICES.map((s, i) => <ServiceCard key={s.title} s={s} i={i} onSelect={onSelect} />)}
       </div>
     </Section>
+  );
+}
+
+function ServiceModal({ service, onClose }) {
+  if (!service) return null;
+
+  return (
+    <AnimatePresence mode="wait">
+      <motion.div
+        role="dialog"
+        aria-modal="true"
+        aria-label={`${service.title} preview`}
+        className="fixed inset-0 z-[80] flex items-center justify-center bg-black/75 p-6"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        onClick={onClose}
+      >
+        <motion.div
+          className="relative w-full max-w-5xl overflow-hidden rounded-[2rem] border border-white/10 bg-[#120613]/95 p-6 md:p-10 shadow-2xl"
+          initial={{ y: 24, opacity: 0, scale: 0.98 }}
+          animate={{ y: 0, opacity: 1, scale: 1 }}
+          exit={{ y: 24, opacity: 0, scale: 0.98 }}
+          transition={{ duration: 0.24, ease: [0.16, 1, 0.3, 1] }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <button
+            type="button"
+            onClick={onClose}
+            className="absolute right-5 top-5 inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-black/40 text-white/80 transition hover:text-white"
+            aria-label="Close preview"
+          >
+            <X className="h-5 w-5" />
+          </button>
+
+          <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+            <div>
+              <p className="text-sm uppercase tracking-[0.35em] text-[#E7A3D2]/80">Signature experience</p>
+              <h3 className="mt-3 text-3xl font-serif text-white">{service.title}</h3>
+              <p className="mt-3 max-w-2xl text-sm leading-relaxed text-white/70">{service.text}</p>
+            </div>
+            <a
+              href={waLink}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-[#F6D7E6] via-[#D886A8] to-[#F6D7E6] px-6 py-3 text-sm font-semibold text-[#120613] shadow-lg shadow-[#D886A8]/20 transition hover:opacity-90"
+            >
+              Book Now
+            </a>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            {service.images.map((src, idx) => (
+              <div key={idx} className="overflow-hidden rounded-3xl border border-white/10 bg-[#0d0710]">
+                <img src={src} alt={`${service.title} photo ${idx + 1}`} className="h-64 w-full object-cover" />
+              </div>
+            ))}
+          </div>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
   );
 }
 
@@ -961,6 +1077,8 @@ function Footer() {
 /* APP                                                                 */
 /* ------------------------------------------------------------------ */
 export default function App() {
+  const [selectedService, setSelectedService] = useState(null);
+
   // Lenis smooth scroll — skipped entirely if the user prefers reduced motion
   useEffect(() => {
     const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -1039,7 +1157,8 @@ export default function App() {
       <Nav />
       <main>
         <Hero />
-        <Services />
+        <Services onSelect={setSelectedService} />
+        <ServiceModal service={selectedService} onClose={() => setSelectedService(null)} />
         <WhyUs />
         <Gallery />
         <Process />
@@ -1048,7 +1167,7 @@ export default function App() {
       </main>
       <Footer />
 
-      <div className="pointer-events-none fixed right-6 top-1/2 z-50 flex w-max -translate-y-1/2 flex-col items-end gap-3">
+      <div className="pointer-events-none fixed right-6 bottom-6 z-50 flex w-max flex-col items-end gap-3">
         <button
           type="button"
           onClick={() => handleContactClick("whatsapp")}
