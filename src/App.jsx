@@ -119,7 +119,7 @@ images: [Img0788,Img0776,Img0777,Img0775,Img0774,Img0771,Img0772,Img0773],
 icon: Sparkles,
 title: "Haldi & Mehndi",
 text: "Rich colour, texture and celebration — designed to feel festive without losing elegance.",
-images: [Img0789,Img0797,Img0795,Img0796,Img0794,Img0793,Img0792],
+images: [Img0797,Img0795,Img0796,Img0794,Img0793,Img0792],
   },
   {
 icon: PartyPopper,
