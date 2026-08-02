@@ -51,7 +51,7 @@ tagline: "Luxury Event Decoration",
 phones: ["+91 8368827064", "+91 7015767715"],
 email: "decorballoonique@gmail.com",
 city: "Delhi NCR, India",
-instagram: "https://instagram.com/balloonique_decor",
+instagram: "https://instagram.com/ballooniquedecor1",
 intro: "We turn special days into memorable spaces — thoughtful, beautiful, and made to feel effortless.",
 };
 const waLink = `https://wa.me/${SITE.phones[0].replace(/\D/g, "")}?text=${encodeURIComponent(
