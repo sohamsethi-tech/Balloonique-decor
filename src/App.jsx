@@ -37,9 +37,41 @@ import Img0800 from "./assets/IMG_0800.jpg";
 import Img0804 from "./assets/IMG_0804.jpg";
 import Img0806 from "./assets/IMG_0806.jpg";
 import Img0807 from "./assets/IMG_0807.jpg";
+import Img0749 from "./assets/IMG_0749.jpg";
+import Img0748 from "./assets/IMG_0748.jpg";
+import Img0760 from "./assets/IMG_0760.jpg";
+import Img0766 from "./assets/IMG_0766.jpg";
+
+import Img0770 from "./assets/IMG_0770.jpg";
+import Img0769 from "./assets/IMG_0769.jpg";
+import Img0768 from "./assets/IMG_0768.jpg";
+import Img0787 from "./assets/IMG_0787.jpg";
+import Img0789 from "./assets/IMG_0789.jpg";
+import Img0790 from "./assets/IMG_0790.jpg";
+import Img0791 from "./assets/IMG_0791.jpg";
+import Img0783 from "./assets/IMG_0783.jpg";
+import Img0788 from "./assets/IMG_0788.jpg";
+import Img0771 from "./assets/IMG_0771.jpg";
+import Img0772 from "./assets/IMG_0772.jpg";
+import Img0773 from "./assets/IMG_0773.jpg";
+import Img0797 from "./assets/IMG_0797.jpg";
+import Img0795 from "./assets/IMG_0795.jpg";
+import Img0801 from "./assets/IMG_0801.jpg";
+import Img0803 from "./assets/IMG_0803.jpg";
+import Img0802 from "./assets/IMG_0802.jpg";
+import Img0799 from "./assets/IMG_0799.jpg";
+import Img0810 from "./assets/IMG_0810.jpg";
+import Img0809 from "./assets/IMG_0809.jpg";
+import Img0808 from "./assets/IMG_0808.jpg";
+
+
+
+
+
 import {
   Cake, Heart, Gem, Baby, Sparkles, PartyPopper,
-  Phone, Mail, MapPin, Camera, ArrowRight, Star, X, Quote, Menu, MessageCircle,
+  Phone, Mail, MapPin, Instagram, ArrowRight, Star, X, Quote,
+  Menu, MessageCircle, Camera,
 } from "lucide-react";
 
 /* ------------------------------------------------------------------ */
@@ -63,37 +95,37 @@ const SERVICES = [
 icon: Cake,
 title: "Birthday Decor",
 text: "Thoughtful setups that feel joyful, polished and personal from the moment guests arrive.",
-images: [Img0752, Img0754, Img0759, Img0761],
+images: [Img0752, Img0754, Img0759, Img0761, Img0749, Img0764, Img0748,Img0760],
   },
   {
 icon: Heart,
 title: "Anniversary",
 text: "Soft lighting, elegant florals and romantic details that make the evening feel special.",
-images: [Img0762, Img0764, Img0765, Img0767],
+images: [Img0762, Img0765, Img0767, Img0764, Img0766, Img0768, Img0769, Img0770],
   },
   {
 icon: Gem,
 title: "Proposal Setup",
 text: "A memorable scene designed around the emotion of the moment — calm, cinematic and beautiful.",
-images: [Img0774, Img0775, Img0776, Img0777],
+images: [Img0790,Img0791,Img0789,Img0787,Img0788,Img0786,Img0784,Img0785],
   },
   {
 icon: Baby,
 title: "Baby Shower",
 text: "Warm, dreamy spaces filled with gentle tones and details that feel welcoming and refined.",
-images: [Img0782, Img0784, Img0785, Img0786],
+images: [Img0788,Img0776,Img0777,Img0775,Img0774,Img0771,Img0772,Img0773],
   },
   {
 icon: Sparkles,
 title: "Haldi & Mehndi",
 text: "Rich colour, texture and celebration — designed to feel festive without losing elegance.",
-images: [Img0792, Img0793, Img0794, Img0796],
+images: [Img0789,Img0797,Img0795,Img0796,Img0794,Img0793,Img0792],
   },
   {
 icon: PartyPopper,
 title: "Corporate & Launch",
 text: "Modern, brand-led setups that feel elevated, sharp and made to impress.",
-images: [Img0800, Img0804, Img0806, Img0807],
+images: [Img0800,Img0801,Img0804,Img0803,Img0802,Img0799,Img0810,Img0809],
   },
 ];
 
@@ -299,7 +331,7 @@ const skipHeavy = reduce || isMobile;
 useEffect(() => {
 if (skipHeavy) return;
 const m = (e) => setCur({ x: e.clientX, y: e.clientY });
-    window.addEventListener("mousemove", m, { passive: true });
+window.addEventListener("mousemove", m, { passive: true });
 return () => window.removeEventListener("mousemove", m);
   }, [skipHeavy]);
 
@@ -408,7 +440,7 @@ const [solid, setSolid] = useState(false);
 const [menuOpen, setMenuOpen] = useState(false);
 useEffect(() => {
 const s = () => setSolid(window.scrollY > 40);
-    window.addEventListener("scroll", s, { passive: true });
+window.addEventListener("scroll", s, { passive: true });
 return () => window.removeEventListener("scroll", s);
   }, []);
 
@@ -699,6 +731,7 @@ exit={{ opacity: 0 }}
 onClick={onClose}
 >
 <motion.div
+data-lenis-prevent
 className="relative w-full max-w-5xl max-h-[90vh] overflow-y-auto rounded-[2rem] border border-white/10 bg-[#120613]/95 p-6 md:p-10 shadow-2xl"
 initial={{ y: 24, opacity: 0, scale: 0.98 }}
 animate={{ y: 0, opacity: 1, scale: 1 }}
@@ -1078,6 +1111,7 @@ className="mt-5 inline-flex items-center gap-3 rounded-full border border-white/
 /* ------------------------------------------------------------------ */
 export default function App() {
 const [selectedService, setSelectedService] = useState(null);
+const lenisRef = useRef(null);
 
 // Lenis smooth scroll — skipped on mobile and when the user prefers reduced motion
 useEffect(() => {
@@ -1090,11 +1124,28 @@ isMobile
 ? { duration: 0.7, smoothWheel: true, smoothTouch: true, lerp: 0.16 }
 : { duration: 1.15, smoothWheel: true, lerp: 0.09 }
     );
+lenisRef.current = lenis;
 let id;
 const raf = (t) => { lenis.raf(t); id = requestAnimationFrame(raf); };
 id = requestAnimationFrame(raf);
 return () => { cancelAnimationFrame(id); lenis.destroy(); };
   }, []);
+
+// Modal khulte hi Lenis smooth-scroll aur body scroll ko pause kar do,
+// taaki modal ke andar wala scroll sahi se kaam kare aur background scroll na ho
+useEffect(() => {
+if (selectedService) {
+lenisRef.current?.stop();
+document.body.style.overflow = "hidden";
+    } else {
+lenisRef.current?.start();
+document.body.style.overflow = "";
+    }
+return () => {
+lenisRef.current?.start();
+document.body.style.overflow = "";
+    };
+  }, [selectedService]);
 
 // SEO (title, description, JSON-LD) without extra deps
 useEffect(() => {
