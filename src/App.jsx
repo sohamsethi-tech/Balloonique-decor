@@ -11,6 +11,8 @@ import {
 } from "framer-motion";
 import Lenis from "lenis";
 import heroImg from "./assets/hero.png";
+import specialImg from "./assets/special.jpg";
+import hiImg from "./assets/hi.jpg";
 import gallery4 from "./assets/hero.png";
 import gallery8 from "./assets/react.webp";
 import Img0752 from "./assets/IMG_0752.jpg";
@@ -665,33 +667,15 @@ function SpecialCollection() {
 
       <Reveal delay={0.15} className="mt-14">
         <div className="relative mx-auto max-w-4xl overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.03] backdrop-blur-xl">
-          {/* balloon garland background */}
-          <div className="pointer-events-none absolute inset-0 overflow-hidden">
-            {Array.from({ length: 14 }).map((_, i) => {
-              const hue = tricolor[i % 3];
-              const side = i % 2 === 0 ? "left" : "right";
-              return (
-                <motion.div
-                  key={i}
-                  className="absolute rounded-[50%]"
-                  style={{
-                    [side]: `${(i % 7) * 6}%`,
-                    top: `${10 + (i % 5) * 16}%`,
-                    width: 46 + (i % 4) * 14,
-                    height: (46 + (i % 4) * 14) * 1.15,
-                    background: `radial-gradient(circle at 32% 26%, rgba(255,255,255,.5), ${hue} 55%, rgba(17,14,12,.35) 100%)`,
-                    boxShadow: `0 0 30px ${hue}40`,
-                  }}
-                  animate={reduce ? {} : { y: [0, -8, 0] }}
-                  transition={{ duration: 4 + (i % 3), repeat: Infinity, ease: "easeInOut", delay: i * 0.15 }}
-                />
-              );
-            })}
-          </div>
+         
 
           {/* Ashoka chakra + banner */}
           <div className="relative flex flex-col items-center justify-center px-8 py-20 text-center md:py-28">
-            <div className="mb-4 h-10 w-16 rounded-sm border border-white/20 bg-gradient-to-b from-[#FF9933] via-white to-[#138808] shadow-lg" />
+            <img
+  src={hiImg}
+  alt="Special collection"
+ className="mb-6 max-w-full max-h-[500px] mx-auto rounded-2xl border border-white/20 shadow-lg object-contain"
+/>
             <h3 className="font-serif text-3xl text-white/95 md:text-5xl">Happy</h3>
             <p className={`font-serif text-4xl italic md:text-6xl ${gold}`}>Independence Day</p>
             <p className="mt-6 max-w-md text-sm font-light text-white/60">
