@@ -95,13 +95,13 @@ const SERVICES = [
 icon: Cake,
 title: "Birthday Decor",
 text: "Thoughtful setups that feel joyful, polished and personal from the moment guests arrive.",
-images: [Img0752, Img0754, Img0759, Img0761, Img0749, Img0764, Img0748,Img0760],
+images: [Img0752, Img0754, Img0759, Img0761, Img0749, Img0764, Img0748],
   },
   {
 icon: Heart,
 title: "Anniversary",
 text: "Soft lighting, elegant florals and romantic details that make the evening feel special.",
-images: [Img0762, Img0765, Img0767, Img0764, Img0766, Img0768, Img0769, Img0770],
+images: [Img0762, Img0765, Img0767, Img0766, Img0768, Img0769, Img0770],
   },
   {
 icon: Gem,
@@ -113,7 +113,7 @@ images: [Img0790,Img0791,Img0789,Img0787,Img0788,Img0786,Img0784,Img0785],
 icon: Baby,
 title: "Baby Shower",
 text: "Warm, dreamy spaces filled with gentle tones and details that feel welcoming and refined.",
-images: [Img0788,Img0776,Img0777,Img0775,Img0774,Img0771,Img0772,Img0773],
+images: [Img0776,Img0777,Img0775,Img0774,Img0771,Img0772,Img0773],
   },
   {
 icon: Sparkles,
@@ -732,7 +732,7 @@ onClick={onClose}
 >
 <motion.div
 data-lenis-prevent
-className="relative w-full max-w-5xl max-h-[90vh] overflow-y-auto rounded-[2rem] border border-white/10 bg-[#120613]/95 p-6 md:p-10 shadow-2xl"
+ className="relative w-full max-w-5xl max-h-[90vh] flex flex-col overflow-hidden rounded-[2rem] border border-white/10 bg-[#120613]/95 p-6 md:p-10 shadow-2xl"
 initial={{ y: 24, opacity: 0, scale: 0.98 }}
 animate={{ y: 0, opacity: 1, scale: 1 }}
 exit={{ y: 24, opacity: 0, scale: 0.98 }}
@@ -793,17 +793,17 @@ className="flex items-center gap-3 px-4 py-3 text-sm text-white/80 transition ho
 </div>
 </div>
 
-<div className="grid gap-4 sm:grid-cols-2">
-{service.images.map((src, idx) => (
-<button
-type="button"
-key={idx}
-onClick={() => window.open(src, "_blank")}
-className="overflow-hidden rounded-3xl border border-white/10 bg-[#0d0710]"
->
-<img src={src} alt={`${service.title} photo ${idx + 1}`} loading="lazy" className="h-64 w-full object-cover" />
-</button>
-            ))}
+<div className="-mx-6 flex-1 overflow-y-auto px-6 md:-mx-10 md:px-10">
+  <div className="columns-1 gap-4 sm:columns-2">
+  {service.images.map((src, idx) => (
+    <div
+      key={idx}
+      className="mb-4 break-inside-avoid overflow-hidden rounded-3xl border border-white/10 bg-[#0d0710]"
+    >
+      <img src={src} alt={`${service.title} photo ${idx + 1}`} loading="lazy" className="h-auto w-full" />
+    </div>
+  ))}
+</div>
 </div>
 </motion.div>
 </motion.div>
