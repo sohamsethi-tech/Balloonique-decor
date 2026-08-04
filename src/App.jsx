@@ -1231,28 +1231,31 @@ return () => ld.remove();
 const clickTimer = useRef({ whatsapp: 0, phone: 0 });
 
 const openContactAction = (type, idx) => {
-const number = (SITE.phones[idx] || SITE.phones[0]).replace(/\D/g, "");
-if (type === "whatsapp") {
-const waUrl = `https://wa.me/${number}?text=${encodeURIComponent("Hi Balloonique Decor! I'd love a quote for my event.")}`;
-window.open(waUrl, "_blank");
-    } else {
-window.location.href = `tel:${number}`;
-    }
-  };
+  const raw = SITE.phones[idx] || SITE.phones[0];
+
+  if (type === "whatsapp") {
+    const number = raw.replace(/\D/g, ""); // wa.me ke liye digits-only theek hai
+    const waUrl = `https://wa.me/${number}?text=${encodeURIComponent("Hi Balloonique Decor! I'd love a quote for my event.")}`;
+    window.open(waUrl, "_blank");
+  } else {
+    const number = raw.replace(/[^\d+]/g, ""); // tel: ke liye + bachana zaroori
+    window.location.href = `tel:${number}`;
+  }
+};
 
 const handleContactClick = (type) => {
-if (clickTimer.current[type]) {
-window.clearTimeout(clickTimer.current[type]);
-clickTimer.current[type] = 0;
-openContactAction(type, 1);
-return;
-    }
+  if (clickTimer.current[type]) {
+    window.clearTimeout(clickTimer.current[type]);
+    clickTimer.current[type] = 0;
+    openContactAction(type, 1);
+    return;
+  }
 
-clickTimer.current[type] = window.setTimeout(() => {
-openContactAction(type, 0);
-clickTimer.current[type] = 0;
-    }, 260);
-  };
+  clickTimer.current[type] = window.setTimeout(() => {
+    openContactAction(type, 0);
+    clickTimer.current[type] = 0;
+  }, 260);
+};
 
 return (
 <div className="relative min-h-screen bg-[#120613] font-sans text-white antialiased selection:bg-[#D67CBF]/30">
