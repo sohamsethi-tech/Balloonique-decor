@@ -914,7 +914,7 @@ className="rounded-2xl border border-white/10 bg-white/[0.03] p-8 text-center ba
 /* ------------------------------------------------------------------ */
 /* GALLERY (masonry + tilt, opens in new tab)                          */
 /* ------------------------------------------------------------------ */
-function TiltImage({ src, onClick, i }) {
+function TiltImage({ src, i }) {
 const reduce = useReducedMotion();
 const ref = useRef(null);
 const [t, setT] = useState({ rx: 0, ry: 0 });
@@ -930,7 +930,6 @@ type="button"
 ref={ref}
 onMouseMove={onMove}
 onMouseLeave={() => setT({ rx: 0, ry: 0 })}
-onClick={onClick}
 aria-label={`Open gallery photo ${i + 1} in a new tab`}
 whileHover={{ scale: 1.02, y: -4 }}
 transition={{ type: "spring", stiffness: 220, damping: 20 }}
@@ -963,7 +962,7 @@ return (
 <div className="mt-16 columns-1 gap-6 sm:columns-2 lg:columns-3">
 {GALLERY.map((src, i) => (
 <div key={i} className="relative">
-<TiltImage src={src} i={i} onClick={() => window.open(src, "_blank")} />
+<TiltImage src={src} i={i}  />
 </div>
         ))}
 </div>
