@@ -1232,6 +1232,13 @@ const clickTimer = useRef({ whatsapp: 0, phone: 0 });
 const openContactAction = (type, idx) => {
   const raw = SITE.phones[idx] || SITE.phones[0];
 
+  // Google Ads conversion tracking
+  if (typeof window !== "undefined" && window.gtag) {
+    window.gtag("event", "conversion", {
+      send_to: "AW-18378520451/ThETCM-fu94cEIPvx7tE",
+    });
+  }
+
   if (type === "whatsapp") {
     const number = raw.replace(/\D/g, ""); // wa.me ke liye digits-only theek hai
     const waUrl = `https://wa.me/${number}?text=${encodeURIComponent("Hi Balloonique Decor! I'd love a quote for my event.")}`;
