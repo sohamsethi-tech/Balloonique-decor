@@ -11,10 +11,6 @@ import {
 } from "framer-motion";
 import Lenis from "lenis";
 import heroImg from "./assets/hero.png";
-import specialImg from "./assets/special.jpg";
-import hiImg from "./assets/hi.jpg";
-import gallery4 from "./assets/hero.png";
-import gallery8 from "./assets/react.webp";
 import Img0752 from "./assets/IMG_0752.jpg";
 import Img0754 from "./assets/IMG_0754.jpg";
 import Img0759 from "./assets/IMG_0759.jpg";
@@ -648,50 +644,7 @@ transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
   );
 }
 
-/* ------------------------------------------------------------------ */
-/* SPECIAL COLLECTION — Independence Day                              */
-/* ------------------------------------------------------------------ */
-function SpecialCollection() {
-  const reduce = useReducedMotion();
-  const tricolor = ["#FF9933", "#FFFFFF", "#138808"]; // saffron, white, green
-
-  return (
-    <Section id="special-collection">
-      <Reveal className="text-center">
-        <Eyebrow>Handpicked For You</Eyebrow>
-        <h2 className="font-serif text-4xl md:text-6xl">
-          <SplitText text="Special" className="text-white/95" />
-          <SplitText text="Collections" wordClass={gold} delay={0.12} />
-        </h2>
-      </Reveal>
-
-      <Reveal delay={0.15} className="mt-14">
-        <div className="relative mx-auto max-w-4xl overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.03] backdrop-blur-xl">
-         
-
-          {/* Ashoka chakra + banner */}
-          <div className="relative flex flex-col items-center justify-center px-8 py-20 text-center md:py-28">
-            <img
-  src={hiImg}
-  alt="Special collection"
- className="mb-6 max-w-full max-h-[500px] mx-auto rounded-2xl border border-white/20 shadow-lg object-contain"
-/>
-            <h3 className="font-serif text-3xl text-white/95 md:text-5xl">Happy</h3>
-            <p className={`font-serif text-4xl italic md:text-6xl ${gold}`}>Independence Day</p>
-            <p className="mt-6 max-w-md text-sm font-light text-white/60">
-              Tricolor balloon décor, patriotic backdrops and festive setups — book your 15th August celebration.
-            </p>
-            <div className="mt-8">
-              <MagneticButton href={waLink}>
-                Book This Theme <ArrowRight className="h-4 w-4" />
-              </MagneticButton>
-            </div>
-          </div>
-        </div>
-      </Reveal>
-    </Section>
-  );
-}
+//For special events
 
 /* ------------------------------------------------------------------ */
 /* SERVICES                                                            */
@@ -1270,7 +1223,6 @@ return (
 <Nav />
 <main>
 <Hero />
-<SpecialCollection />
 <Services onSelect={setSelectedService} />
 <ServiceModal service={selectedService} onClose={() => setSelectedService(null)} />
 <WhyUs />
