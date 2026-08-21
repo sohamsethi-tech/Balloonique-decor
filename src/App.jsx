@@ -131,7 +131,7 @@ const WHY = [
   { k: "01", t: "Designed Around Your Story", d: "We build every setup around your theme, venue and the feeling you want people to remember." },
   { k: "02", t: "Only the Finest Materials", d: "We use premium-quality balloons and decor elements that stay rich, smooth and beautiful throughout the event." },
   { k: "03", t: "Reliable from Start to Finish", d: "From planning to installation, we stay calm, organised and focused on making everything look effortless." },
-  { k: "04", t: "Trusted by Many Happy Families", d: "We've styled hundreds of celebrations across Gurugram NCR and know how to make each one feel personal." },
+  { k: "04", t: "Trusted by Many Happy Families", d: "We've styled hundreds of celebrations across Gurugram  and know how to make each one feel personal." },
 ];
 
 const STATS = [
@@ -1149,13 +1149,13 @@ document.body.style.overflow = "";
 
 // SEO (title, description, JSON-LD) without extra deps
 useEffect(() => {
-document.title = "Balloonique Decor | Luxury Balloon & Event Decoration in Gurugram NCR";
+document.title = "Balloonique Decor | Luxury Balloon & Event Decoration in Gurugram";
 const meta = (attr, key, val) => {
 let el = document.querySelector(`meta[${attr}="${key}"]`);
 if (!el) { el = document.createElement("meta"); el.setAttribute(attr, key); document.head.appendChild(el); }
 el.setAttribute("content", val);
     };
-const desc = "Balloonique Decor creates luxury balloon decor for birthdays, anniversaries, proposals and baby showers across Gurugram NCR. Book your cinematic setup today.";
+const desc = "Balloonique Decor creates luxury balloon decor for birthdays, anniversaries, proposals and baby showers across Gurugram. Book your cinematic setup today.";
 meta("name", "description", desc);
 meta("property", "og:title", "Balloonique Decor | Luxury Event Decoration");
 meta("property", "og:description", desc);
@@ -1173,7 +1173,7 @@ description: desc,
 telephone: SITE.phones[0],
 email: SITE.email,
 url: typeof window !== "undefined" ? window.location.origin : undefined,
-address: { "@type": "PostalAddress", addressLocality: "Gurugram NCR", addressCountry: "IN" },
+address: { "@type": "PostalAddress", addressLocality: "Gurugram", addressCountry: "IN" },
 aggregateRating: { "@type": "AggregateRating", ratingValue: "4.9", reviewCount: "180" },
     });
 document.head.appendChild(ld);
