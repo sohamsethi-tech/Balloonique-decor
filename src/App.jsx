@@ -1,5 +1,5 @@
 // src/App.jsx
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   motion,
   useScroll,
@@ -424,8 +424,8 @@ const Eyebrow = ({ children }) => (
 </div>
 );
 
-const Section = ({ id, children, className = "" }) => (
-<section id={id} className={`relative z-10 mx-auto w-full max-w-7xl px-6 py-28 md:py-40 ${className}`}>
+const Section = ({ id, children, className = "", ...rest }) => (
+<section {...rest} id={id} className={`relative z-10 mx-auto w-full max-w-7xl px-6 py-28 md:py-40 ${className}`}>
 {children}
 </section>
 );
@@ -462,8 +462,8 @@ solid || menuOpen ? "border-b border-white/10 bg-black/50 backdrop-blur-xl py-3"
 </ul>
 
 <div className="hidden md:block">
-<MagneticButton href={waLink} className="!px-6 !py-3 !text-xs">
-            Book Now <ArrowRight className="h-3.5 w-3.5" />
+<MagneticButton href={`tel:${SITE.phones[0].replace(/\s/g, "")}`} className="!px-6 !py-3 !text-xs">
+           📞 +91 8368827064
 </MagneticButton>
 </div>
 
@@ -500,8 +500,8 @@ className="block py-3 text-sm uppercase tracking-[0.2em] text-white/70 transitio
 </li>
               ))}
 <li className="pt-3">
-<MagneticButton href={waLink} className="!w-full !justify-center">
-                  Book Now <ArrowRight className="h-3.5 w-3.5" />
+<MagneticButton href={`tel:${SITE.phones[0].replace(/\s/g, "")}`} className="!w-full !justify-center">
+                  8368827064
 </MagneticButton>
 </li>
 </ul>
@@ -644,6 +644,26 @@ transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
   );
 }
 
+function PromoBanner() {
+return (
+<section className="relative z-10 mx-auto w-full max-w-7xl px-6 py-12 md:py-16" aria-label="Limited-time 20% discount">
+<Reveal>
+<a
+href="#contact"
+aria-label="Claim your 20% discount"
+className="block overflow-hidden rounded-[2rem] border border-[#D67CBF]/20 shadow-[0_24px_70px_rgba(0,0,0,0.2)] transition duration-300 hover:border-[#D67CBF]/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F5D0EC]"
+>
+<img
+src="/20%off.png"
+alt="Balloonique Decor limited-time offer: Flat 20% off event decorations. Claim your discount."
+className="block h-auto w-full"
+/>
+</a>
+</Reveal>
+</section>
+  );
+}
+
 //For special events
 
 /* ------------------------------------------------------------------ */
@@ -716,15 +736,96 @@ return (
 }
 
 function ServiceModal({ service, onClose }) {
-const [showContact, setShowContact] = useState(false);
+const dialogRef = useRef(null);
+const modalContentRef = useRef(null);
+const closeButtonRef = useRef(null);
+const touchStartRef = useRef(null);
+const serviceMessage = `Hi, I am interested in booking your ${service?.title} decoration service. Please share the details.`;
+const serviceWhatsAppLink = `https://wa.me/918368827064?text=${encodeURIComponent(serviceMessage)}`;
+
+useEffect(() => {
+if (!service) return;
+
+const previouslyFocused = document.activeElement;
+closeButtonRef.current?.focus();
+const handleKeyDown = (event) => {
+if (event.key === "Escape") {
+event.stopPropagation();
+onClose();
+return;
+}
+if (event.key !== "Tab") return;
+
+const focusable = dialogRef.current?.querySelectorAll(
+'button:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])'
+);
+if (!focusable?.length) return;
+const first = focusable[0];
+const last = focusable[focusable.length - 1];
+if (event.shiftKey && document.activeElement === first) {
+event.preventDefault();
+last.focus();
+} else if (!event.shiftKey && document.activeElement === last) {
+event.preventDefault();
+first.focus();
+}
+};
+
+const overlay = dialogRef.current;
+const isInsideModal = (target) => target instanceof Node && Boolean(modalContentRef.current?.contains(target));
+const closeForPageWheel = (event) => {
+if (!isInsideModal(event.target)) onClose();
+};
+const handleTouchStart = (event) => {
+const touch = event.changedTouches[0];
+if (!touch) return;
+touchStartRef.current = {
+insideModal: isInsideModal(event.target),
+x: touch.clientX,
+y: touch.clientY,
+};
+};
+const handleTouchMove = (event) => {
+const start = touchStartRef.current;
+const touch = event.changedTouches[0];
+if (!start || start.insideModal || !touch) return;
+if (Math.hypot(touch.clientX - start.x, touch.clientY - start.y) < 8) return;
+touchStartRef.current = null;
+onClose();
+};
+const clearTouchStart = () => {
+touchStartRef.current = null;
+};
+
+document.addEventListener("keydown", handleKeyDown);
+overlay?.addEventListener("wheel", closeForPageWheel, { passive: true });
+overlay?.addEventListener("touchstart", handleTouchStart, { passive: true });
+overlay?.addEventListener("touchmove", handleTouchMove, { passive: true });
+overlay?.addEventListener("touchend", clearTouchStart, { passive: true });
+overlay?.addEventListener("touchcancel", clearTouchStart, { passive: true });
+return () => {
+document.removeEventListener("keydown", handleKeyDown);
+overlay?.removeEventListener("wheel", closeForPageWheel);
+overlay?.removeEventListener("touchstart", handleTouchStart);
+overlay?.removeEventListener("touchmove", handleTouchMove);
+overlay?.removeEventListener("touchend", clearTouchStart);
+overlay?.removeEventListener("touchcancel", clearTouchStart);
+if (previouslyFocused instanceof HTMLElement && document.contains(previouslyFocused)) {
+previouslyFocused.focus();
+}
+};
+}, [service, onClose]);
+
 if (!service) return null;
 
 return (
 <AnimatePresence mode="wait">
 <motion.div
+ref={dialogRef}
 role="dialog"
 aria-modal="true"
 aria-label={`${service.title} preview`}
+tabIndex={-1}
 className="fixed inset-0 z-[80] flex items-center justify-center bg-black/75 p-4 md:p-6"
 initial={{ opacity: 0 }}
 animate={{ opacity: 1 }}
@@ -732,6 +833,7 @@ exit={{ opacity: 0 }}
 onClick={onClose}
 >
 <motion.div
+ref={modalContentRef}
 data-lenis-prevent
 className="relative w-full max-w-5xl max-h-[90vh] flex flex-col overflow-hidden rounded-[2rem] border border-white/10 bg-[#120613]/95 p-6 md:p-10 shadow-2xl"
 initial={{ y: 24, opacity: 0, scale: 0.98 }}
@@ -741,6 +843,7 @@ transition={{ duration: 0.24, ease: [0.16, 1, 0.3, 1] }}
 onClick={(e) => e.stopPropagation()}
 >
 <button
+ref={closeButtonRef}
 type="button"
 onClick={onClose}
 className="absolute right-5 top-5 z-10 inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-black/40 text-white/80 transition hover:text-white"
@@ -749,52 +852,36 @@ aria-label="Close preview"
 <X className="h-5 w-5" />
 </button>
 
-<div className="mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+<div className="mb-6 flex flex-col gap-5">
 <div>
 <p className="text-sm uppercase tracking-[0.35em] text-[#E7A3D2]/80">Signature experience</p>
 <h3 className="mt-3 text-3xl font-serif text-white">{service.title}</h3>
 <p className="mt-3 max-w-2xl text-sm leading-relaxed text-white/70">{service.text}</p>
 </div>
 
-<div className="relative">
-<button
-type="button"
-onClick={() => setShowContact((v) => !v)}
-className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-[#F6D7E6] via-[#D886A8] to-[#F6D7E6] px-6 py-3 text-sm font-semibold text-[#120613] shadow-lg shadow-[#D886A8]/20 transition hover:opacity-90"
->
-              Book Now
-</button>
-
-<AnimatePresence>
-{showContact && (
-<motion.div
-initial={{ opacity: 0, y: -8 }}
-animate={{ opacity: 1, y: 0 }}
-exit={{ opacity: 0, y: -8 }}
-transition={{ duration: 0.2 }}
-className="absolute right-0 top-full z-20 mt-2 w-48 overflow-hidden rounded-2xl border border-white/10 bg-[#1a0c19] shadow-xl"
->
+<div className="flex flex-col gap-3 sm:flex-row">
 <a
-href={waLink}
+href={serviceWhatsAppLink}
 target="_blank"
 rel="noreferrer"
-className="flex items-center gap-3 px-4 py-3 text-sm text-white/80 transition hover:bg-white/5 hover:text-white"
+aria-label={`Book ${service.title} via WhatsApp`}
+className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#F6D7E6] via-[#D886A8] to-[#F6D7E6] px-6 py-3 text-sm font-semibold text-[#120613] shadow-lg shadow-[#D886A8]/20 transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F5D0EC] focus-visible:ring-offset-2 focus-visible:ring-offset-[#120613]"
 >
-<MessageCircle className="h-4 w-4 text-[#E7A3D2]" /> WhatsApp
+<MessageCircle aria-hidden="true" className="h-4 w-4" />
+WhatsApp
 </a>
 <a
-href={`tel:${SITE.phones[0].replace(/\s/g, "")}`}
-className="flex items-center gap-3 px-4 py-3 text-sm text-white/80 transition hover:bg-white/5 hover:text-white"
+href="tel:+918368827064"
+aria-label={`Call now to book ${service.title}`}
+className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[#D67CBF]/35 bg-[#D67CBF]/[0.08] px-6 py-3 text-sm font-medium text-[#F5CFE3] transition hover:border-[#D67CBF]/60 hover:bg-[#D67CBF]/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F5D0EC] focus-visible:ring-offset-2 focus-visible:ring-offset-[#120613]"
 >
-<Phone className="h-4 w-4 text-[#E7A3D2]" /> Call
+<Phone aria-hidden="true" className="h-4 w-4" />
+Call Now
 </a>
-</motion.div>
-              )}
-</AnimatePresence>
 </div>
 </div>
 
-<div className="-mx-6 flex-1 overflow-y-auto px-6 md:-mx-10 md:px-10">
+<div className="-mx-6 flex-1 overflow-y-auto overscroll-contain px-6 md:-mx-10 md:px-10">
 <div className="columns-1 gap-4 sm:columns-2">
 {service.images.map((src, idx) => (
 <div
@@ -1037,12 +1124,12 @@ className={`h-1.5 rounded-full outline-none transition-all focus-visible:ring-2 
 /* ------------------------------------------------------------------ */
 function CTA() {
 return (
-<Section className="!py-24">
+<Section id="contact" className="!py-24" aria-labelledby="contact-heading">
 <Reveal>
 <div className="relative overflow-hidden rounded-[2rem] border border-[#D67CBF]/20 bg-gradient-to-br from-[#D67CBF]/10 via-white/[0.03] to-transparent p-12 text-center backdrop-blur-xl md:p-24">
 <div className="absolute -left-24 -top-24 h-72 w-72 rounded-full bg-[#D67CBF]/12 blur-[100px]" />
 <div className="absolute right-8 top-8 h-24 w-24 rounded-full border border-[#D67CBF]/15" />
-<h2 className="relative font-serif text-4xl leading-tight md:text-6xl">
+<h2 id="contact-heading" tabIndex={-1} className="relative font-serif text-4xl leading-tight outline-none md:text-6xl">
 <span className="text-white/95">Let's design your </span>
 <span className={gold}>unforgettable day.</span>
 </h2>
@@ -1131,21 +1218,29 @@ id = requestAnimationFrame(raf);
 return () => { cancelAnimationFrame(id); lenis.destroy(); };
   }, []);
 
-// Modal khulte hi Lenis smooth-scroll aur body scroll ko pause kar do,
-// taaki modal ke andar wala scroll sahi se kaam kare aur background scroll na ho
-useEffect(() => {
-if (selectedService) {
-lenisRef.current?.stop();
-document.body.style.overflow = "hidden";
-    } else {
-lenisRef.current?.start();
-document.body.style.overflow = "";
-    }
-return () => {
-lenisRef.current?.start();
-document.body.style.overflow = "";
-    };
-  }, [selectedService]);
+const scrollToContact = useCallback((focusHeading = false) => {
+const contact = document.getElementById("contact");
+if (!contact) return;
+
+const rect = contact.getBoundingClientRect();
+const contactIsVisible = rect.top < window.innerHeight && rect.bottom > 0;
+if (!contactIsVisible) {
+if (lenisRef.current) {
+lenisRef.current.scrollTo(contact, { offset: -24, force: true });
+} else {
+const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+contact.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
+}
+}
+
+if (focusHeading) {
+document.getElementById("contact-heading")?.focus({ preventScroll: true });
+}
+}, []);
+
+const closeServiceModal = useCallback(() => {
+setSelectedService(null);
+}, []);
 
 // SEO (title, description, JSON-LD) without extra deps
 useEffect(() => {
@@ -1223,8 +1318,9 @@ return (
 <Nav />
 <main>
 <Hero />
+<PromoBanner />
 <Services onSelect={setSelectedService} />
-<ServiceModal service={selectedService} onClose={() => setSelectedService(null)} />
+<ServiceModal service={selectedService} onClose={closeServiceModal} />
 <WhyUs />
 <Gallery />
 <Process />
@@ -1233,7 +1329,16 @@ return (
 </main>
 <Footer />
 
-<div className="pointer-events-none fixed right-6 bottom-6 z-50 flex w-max flex-col items-end gap-3">
+<button
+type="button"
+onClick={() => scrollToContact()}
+className="fixed bottom-4 left-4 z-[49] inline-flex min-h-11 items-center gap-2 rounded-full border border-[#D67CBF]/35 bg-[#1a0c19]/95 px-3.5 py-3 text-xs font-medium text-white shadow-[0_18px_50px_rgba(214,124,191,0.16)] backdrop-blur-md transition duration-300 hover:-translate-y-1 hover:border-[#D67CBF]/60 hover:bg-[#2a0e25]/95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F5D0EC] sm:bottom-6 sm:left-6 sm:gap-3 sm:px-5 sm:text-sm"
+>
+<Sparkles aria-hidden="true" className="h-4 w-4 shrink-0 text-[#E7A3D2]" />
+Plan Your Event
+</button>
+
+<div className="pointer-events-none fixed right-4 bottom-4 z-50 flex w-max flex-col items-end gap-3 sm:right-6 sm:bottom-6">
 <button
 type="button"
 onClick={() => handleContactClick("whatsapp")}
