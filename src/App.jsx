@@ -654,7 +654,7 @@ aria-label="Claim your 20% discount"
 className="block overflow-hidden rounded-[2rem] border border-[#D67CBF]/20 shadow-[0_24px_70px_rgba(0,0,0,0.2)] transition duration-300 hover:border-[#D67CBF]/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F5D0EC]"
 >
 <img
-src="/20%off.png"
+src="/promo-20-off.png"
 alt="Balloonique Decor limited-time offer: Flat 20% off event decorations. Claim your discount."
 className="block h-auto w-full"
 />
