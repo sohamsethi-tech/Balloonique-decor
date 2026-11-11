@@ -1,5 +1,5 @@
 // src/App.jsx
-import { useCallback, useEffect, useRef, useState } from "react";
+import { lazy, memo, Suspense, useCallback, useEffect, useRef, useState } from "react";
 import {
   motion,
   useScroll,
@@ -10,7 +10,9 @@ import {
   AnimatePresence,
 } from "framer-motion";
 import Lenis from "lenis";
-import heroImg from "./assets/hero.png";
+import { Eyebrow, gold, MagneticButton, Reveal, Section, SplitText } from "./components/SectionPrimitives";
+import { getImageDimensions } from "./imageDimensions";
+import heroPhoto from "./assets/hero-birthday.jpg";
 import Img0752 from "./assets/IMG_0752.jpg";
 import Img0754 from "./assets/IMG_0754.jpg";
 import Img0759 from "./assets/IMG_0759.jpg";
@@ -23,7 +25,6 @@ import Img0774 from "./assets/IMG_0774.jpg";
 import Img0775 from "./assets/IMG_0775.jpg";
 import Img0776 from "./assets/IMG_0776.jpg";
 import Img0777 from "./assets/IMG_0777.jpg";
-import Img0782 from "./assets/IMG_0782.jpg";
 import Img0784 from "./assets/IMG_0784.jpg";
 import Img0785 from "./assets/IMG_0785.jpg";
 import Img0786 from "./assets/IMG_0786.jpg";
@@ -33,11 +34,9 @@ import Img0794 from "./assets/IMG_0794.jpg";
 import Img0796 from "./assets/IMG_0796.jpg";
 import Img0800 from "./assets/IMG_0800.jpg";
 import Img0804 from "./assets/IMG_0804.jpg";
-import Img0806 from "./assets/IMG_0806.jpg";
 import Img0807 from "./assets/IMG_0807.jpg";
 import Img0749 from "./assets/IMG_0749.jpg";
 import Img0748 from "./assets/IMG_0748.jpg";
-import Img0760 from "./assets/IMG_0760.jpg";
 import Img0766 from "./assets/IMG_0766.jpg";
 
 import Img0770 from "./assets/IMG_0770.jpg";
@@ -47,7 +46,6 @@ import Img0787 from "./assets/IMG_0787.jpg";
 import Img0789 from "./assets/IMG_0789.jpg";
 import Img0790 from "./assets/IMG_0790.jpg";
 import Img0791 from "./assets/IMG_0791.jpg";
-import Img0783 from "./assets/IMG_0783.jpg";
 import Img0788 from "./assets/IMG_0788.jpg";
 import Img0771 from "./assets/IMG_0771.jpg";
 import Img0772 from "./assets/IMG_0772.jpg";
@@ -60,16 +58,14 @@ import Img0802 from "./assets/IMG_0802.jpg";
 import Img0799 from "./assets/IMG_0799.jpg";
 import Img0810 from "./assets/IMG_0810.jpg";
 import Img0809 from "./assets/IMG_0809.jpg";
-import Img0808 from "./assets/IMG_0808.jpg";
 
 
 
 
 
 import {
-  Cake, Heart, Gem, Baby, Sparkles, PartyPopper,
-  Phone, Mail, MapPin, ArrowRight, Star, X, Quote,
-  Menu, MessageCircle, Camera,
+  Cake, Heart, Gem, Baby, Sparkles, PartyPopper, CalendarDays, Star,
+  Phone, ArrowRight, X, Menu,
 } from "lucide-react";
 
 /* ------------------------------------------------------------------ */
@@ -78,15 +74,15 @@ import {
 const SITE = {
 brand: "Balloonique Decor",
 tagline: "Luxury Event Decoration",
-phones: ["+91 8368827064", "+91 7015767715"],
+phone: "+91 8368827064",
+phoneLink: "tel:+918368827064",
+alternatePhone: "+91 7015767715",
+alternatePhoneLink: "tel:+917015767715",
 email: "decorballoonique@gmail.com",
 city: "Gurugram, India",
 instagram: "https://instagram.com/ballooniquedecor1",
 intro: "We turn special days into memorable spaces — thoughtful, beautiful, and made to feel effortless.",
 };
-const waLink = `https://wa.me/${SITE.phones[0].replace(/\D/g, "")}?text=${encodeURIComponent(
-"Hi Balloonique Decor! I'd love a quote for my event."
-)}`;
 
 const SERVICES = [
   {
@@ -164,7 +160,7 @@ Img0765,
 Img0767,
 Img0774,
 ];
-const HERO_IMG = heroImg;
+const HERO_IMG = heroPhoto;
 
 const NAV_LINKS = [
   ["Services", "#services"],
@@ -174,125 +170,54 @@ const NAV_LINKS = [
   ["Reviews", "#reviews"],
 ];
 
-/* ------------------------------------------------------------------ */
-/* PRIMITIVES                                                          */
-/* ------------------------------------------------------------------ */
-const gold = "bg-gradient-to-r from-[#F6D7E6] via-[#D886A8] to-[#F6D7E6] bg-clip-text text-transparent";
-
-function Reveal({ children, delay = 0, y = 30, className = "" }) {
-const ref = useRef(null);
-const inView = useInView(ref, { once: true, margin: "-12% 0px" });
-const reduce = useReducedMotion();
-return (
-<motion.div
-ref={ref}
-className={className}
-initial={reduce ? { opacity: 0 } : { opacity: 0, y, filter: "blur(8px)" }}
-animate={inView ? (reduce ? { opacity: 1 } : { opacity: 1, y: 0, filter: "blur(0px)" }) : {}}
-transition={{ duration: reduce ? 0.3 : 1, delay: reduce ? 0 : delay, ease: [0.16, 1, 0.3, 1] }}
->
-{children}
-</motion.div>
-  );
-}
-
-/** Word-by-word cinematic headline reveal */
-function SplitText({ text, className = "", wordClass = "", delay = 0 }) {
-const ref = useRef(null);
-const inView = useInView(ref, { once: true, margin: "-10% 0px" });
-const reduce = useReducedMotion();
-if (reduce) {
-return (
-<span ref={ref} className={className}>
-<span className={wordClass}>{text}</span>
-</span>
-    );
-  }
-return (
-<span ref={ref} className={className}>
-{text.split(" ").map((w, i) => (
-<span key={i} className="inline-block overflow-hidden align-bottom">
-<motion.span
-className={`inline-block ${wordClass}`}
-initial={{ y: "110%", opacity: 0 }}
-animate={inView ? { y: "0%", opacity: 1 } : {}}
-transition={{ duration: 0.9, delay: delay + i * 0.07, ease: [0.16, 1, 0.3, 1] }}
->
-{w}&nbsp;
-</motion.span>
-</span>
-      ))}
-</span>
-  );
-}
-
-/** Magnetic button with gold sheen */
-function MagneticButton({ children, href, variant = "solid", className = "", ...rest }) {
-const ref = useRef(null);
-const reduce = useReducedMotion();
-const [p, setP] = useState({ x: 0, y: 0 });
-const onMove = (e) => {
-if (reduce || !ref.current) return;
-const r = ref.current.getBoundingClientRect();
-setP({ x: (e.clientX - (r.left + r.width / 2)) * 0.25, y: (e.clientY - (r.top + r.height / 2)) * 0.35 });
-  };
-const base =
-variant === "solid"
-? "bg-gradient-to-r from-[#F5D0EC] to-[#D67CBF] text-[#35142B]"
-: "border border-[#D67CBF]/30 text-[#FBE9F1] backdrop-blur-md bg-[#F5D0EC]/10";
-return (
-<motion.a
-ref={ref}
-href={href}
-target={href?.startsWith("http") ? "_blank" : undefined}
-rel="noreferrer"
-onMouseMove={onMove}
-onMouseLeave={() => setP({ x: 0, y: 0 })}
-whileHover={{ y: -3, scale: 1.02, boxShadow: "0 14px 32px rgba(214,124,191,0.18)" }}
-whileTap={{ scale: 0.97 }}
-animate={{ x: p.x, y: p.y }}
-transition={{ type: "spring", stiffness: 220, damping: 18, mass: 0.45 }}
-className={`group relative inline-flex items-center gap-2 overflow-hidden rounded-full px-8 py-4 text-sm font-medium tracking-wide outline-none focus-visible:ring-2 focus-visible:ring-[#F5D0EC] focus-visible:ring-offset-2 focus-visible:ring-offset-black ${base} ${className}`}
-{...rest}
->
-<span className="relative z-10 flex items-center gap-2">{children}</span>
-<span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/40 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
-</motion.a>
-  );
-}
+const HERO_FEATURES = [
+  { icon: CalendarDays, label: "Same-Day Styling" },
+  { icon: Gem, label: "Premium Materials" },
+  { icon: Star, label: "500+ Events Styled" },
+];
 
 /** Count-up number */
-function Counter({ to, suffix = "" }) {
+const Counter = memo(function Counter({ to, suffix = "" }) {
 const ref = useRef(null);
 const inView = useInView(ref, { once: true });
 const reduce = useReducedMotion();
-const [v, setV] = useState(0);
 useEffect(() => {
 if (!inView) return;
-if (reduce) { setV(to); return; }
+const format = (value) => Number.isInteger(to) ? String(Math.round(value)) : value.toFixed(1);
+if (reduce) {
+if (ref.current) ref.current.textContent = format(to);
+return;
+}
 const dur = 1600, t0 = performance.now();
 let id;
 const tick = (t) => {
 const p = Math.min((t - t0) / dur, 1);
-setV(to * (1 - Math.pow(1 - p, 3)));
+if (ref.current) ref.current.textContent = format(to * (1 - Math.pow(1 - p, 3)));
 if (p < 1) id = requestAnimationFrame(tick);
     };
 id = requestAnimationFrame(tick);
 return () => cancelAnimationFrame(id);
   }, [inView, to, reduce]);
-const isFloat = !Number.isInteger(to);
 return (
-<span ref={ref} className={`text-4xl md:text-5xl font-light ${gold}`}>
-{isFloat ? v.toFixed(1) : Math.round(v)}
+<span className={`text-4xl md:text-5xl font-light ${gold}`}>
+<span ref={ref}>{Number.isInteger(to) ? "0" : "0.0"}</span>
 {suffix}
 </span>
   );
-}
+});
 
 /* ------------------------------------------------------------------ */
 /* ATMOSPHERE: noise, orbs, cursor glow, floating balloons             */
 /* ------------------------------------------------------------------ */
-function Balloon({ x, size, delay, dur, hue }) {
+const ATMOSPHERE_BALLOONS = [
+  { x: 6, size: 90, delay: 0, dur: 26, hue: "#D67CBF" },
+  { x: 22, size: 56, delay: 5, dur: 32, hue: "#DEA3C7" },
+  { x: 48, size: 70, delay: 11, dur: 29, hue: "#B27C9F" },
+  { x: 71, size: 48, delay: 3, dur: 35, hue: "#F5E5F0" },
+  { x: 88, size: 100, delay: 8, dur: 24, hue: "#D67CBF" },
+];
+
+const Balloon = memo(function Balloon({ x, size, delay, dur, hue }) {
 return (
 <motion.div
 className="pointer-events-none absolute rounded-[50%]"
@@ -311,35 +236,38 @@ transition={{ duration: dur, delay, repeat: Infinity, ease: "linear" }}
 <span className="absolute left-1/2 top-full h-24 w-px -translate-x-1/2 bg-gradient-to-b from-white/40 to-transparent" />
 </motion.div>
   );
-}
+});
 
-function Atmosphere() {
+const Atmosphere = memo(function Atmosphere({ heroRef }) {
 const reduce = useReducedMotion();
+const heroInView = useInView(heroRef, { amount: 0.2 });
 const { scrollYProgress } = useScroll();
 const bar = useSpring(scrollYProgress, { stiffness: 120, damping: 30 });
-const [cur, setCur] = useState({ x: -300, y: -300 });
-const [isMobile, setIsMobile] = useState(false);
+const cursorRef = useRef(null);
+const skipHeavy = reduce || window.matchMedia("(max-width: 767px)").matches;
 
 useEffect(() => {
-setIsMobile(window.innerWidth < 768);
-  }, []);
-
-const skipHeavy = reduce || isMobile;
-
-useEffect(() => {
-if (skipHeavy) return;
-const m = (e) => setCur({ x: e.clientX, y: e.clientY });
-window.addEventListener("mousemove", m, { passive: true });
-return () => window.removeEventListener("mousemove", m);
-  }, [skipHeavy]);
-
-const balloons = [
-    { x: 6, size: 90, delay: 0, dur: 26, hue: "#D67CBF" },
-    { x: 22, size: 56, delay: 5, dur: 32, hue: "#DEA3C7" },
-    { x: 48, size: 70, delay: 11, dur: 29, hue: "#B27C9F" },
-    { x: 71, size: 48, delay: 3, dur: 35, hue: "#F5E5F0" },
-    { x: 88, size: 100, delay: 8, dur: 24, hue: "#D67CBF" },
-  ];
+if (skipHeavy || !heroInView) return undefined;
+let frame = 0;
+let pointerX = -300;
+let pointerY = -300;
+const update = (event) => {
+pointerX = event.clientX;
+pointerY = event.clientY;
+if (frame) return;
+frame = requestAnimationFrame(() => {
+if (cursorRef.current) {
+cursorRef.current.style.transform = `translate3d(${pointerX - 210}px, ${pointerY - 210}px, 0)`;
+}
+frame = 0;
+});
+};
+window.addEventListener("mousemove", update, { passive: true });
+return () => {
+window.removeEventListener("mousemove", update);
+if (frame) cancelAnimationFrame(frame);
+};
+  }, [heroInView, skipHeavy]);
 
 return (
 <>
@@ -352,17 +280,15 @@ className="fixed left-0 top-0 z-[60] h-[2px] w-full origin-left bg-gradient-to-r
 <>
 {/* cursor glow */}
 <div
+ref={cursorRef}
 className="pointer-events-none fixed z-0 h-[420px] w-[420px] rounded-full opacity-30 blur-[90px] transition-transform duration-300"
-style={{
-transform: `translate3d(${cur.x - 210}px, ${cur.y - 210}px, 0)`,
-background: "radial-gradient(circle, rgba(214,124,191,.20), transparent 65%)",
-            }}
+style={{ background: "radial-gradient(circle, rgba(214,124,191,.20), transparent 65%)" }}
 />
 {/* orbs */}
 <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-<div className="absolute -left-40 top-10 h-[520px] w-[520px] rounded-full bg-[#D67CBF]/8 blur-[120px] animate-[orb_18s_ease-in-out_infinite]" />
-<div className="absolute -right-32 bottom-0 h-[460px] w-[460px] rounded-full bg-[#A962AB]/8 blur-[130px] animate-[orb_22s_ease-in-out_infinite_reverse]" />
-{balloons.map((b, i) => <Balloon key={i} {...b} />)}
+<div className={`absolute -left-40 top-10 h-[520px] w-[520px] rounded-full bg-[#D67CBF]/8 blur-[120px] ${heroInView ? "animate-[orb_18s_ease-in-out_infinite]" : ""}`} />
+<div className={`absolute -right-32 bottom-0 h-[460px] w-[460px] rounded-full bg-[#A962AB]/8 blur-[130px] ${heroInView ? "animate-[orb_22s_ease-in-out_infinite_reverse]" : ""}`} />
+{heroInView && ATMOSPHERE_BALLOONS.map((balloon) => <Balloon key={balloon.x} {...balloon} />)}
 </div>
 </>
       )}
@@ -370,12 +296,12 @@ background: "radial-gradient(circle, rgba(214,124,191,.20), transparent 65%)",
 <div className="noise pointer-events-none fixed inset-0 z-[55] opacity-[0.05]" />
 </>
   );
-}
+});
 
 /* ------------------------------------------------------------------ */
 /* LOADER                                                              */
 /* ------------------------------------------------------------------ */
-function Loader() {
+const Loader = memo(function Loader() {
 const reduce = useReducedMotion();
 const [done, setDone] = useState(false);
 useEffect(() => {
@@ -388,22 +314,22 @@ return (
 {!done && (
 <motion.div
 className="fixed inset-0 z-[100] flex items-center justify-center bg-[#120613]"
-exit={{ opacity: 0, filter: reduce ? "none" : "blur(12px)" }}
+exit={{ opacity: 0 }}
 transition={{ duration: reduce ? 0.2 : 0.9, ease: [0.16, 1, 0.3, 1] }}
 >
 <div className="text-center">
 <motion.h1
 className={`font-serif text-3xl tracking-[0.35em] md:text-5xl ${gold}`}
-initial={reduce ? { opacity: 0 } : { opacity: 0, letterSpacing: "0.9em" }}
-animate={reduce ? { opacity: 1 } : { opacity: 1, letterSpacing: "0.35em" }}
+initial={{ opacity: 0 }}
+animate={{ opacity: 1 }}
 transition={{ duration: reduce ? 0.2 : 1.6, ease: [0.16, 1, 0.3, 1] }}
 >
               BALLOONIQUE
 </motion.h1>
 <motion.div
-className="mx-auto mt-6 h-px bg-gradient-to-r from-transparent via-[#D67CBF] to-transparent"
-initial={{ width: 0 }}
-animate={{ width: 220 }}
+className="mx-auto mt-6 h-px w-[220px] origin-center bg-gradient-to-r from-transparent via-[#D67CBF] to-transparent"
+initial={{ scaleX: 0 }}
+animate={{ scaleX: 1 }}
 transition={{ duration: reduce ? 0.2 : 1.5, ease: "easeInOut" }}
 />
 </div>
@@ -411,36 +337,43 @@ transition={{ duration: reduce ? 0.2 : 1.5, ease: "easeInOut" }}
       )}
 </AnimatePresence>
   );
-}
-
-/* ------------------------------------------------------------------ */
-/* SECTION HELPERS                                                     */
-/* ------------------------------------------------------------------ */
-const Eyebrow = ({ children }) => (
-<div className="mb-5 flex items-center justify-center gap-3">
-<span className="h-px w-10 bg-[#D67CBF]/60" />
-<span className="text-[11px] uppercase tracking-[0.4em] text-[#E7A3D2]">{children}</span>
-<span className="h-px w-10 bg-[#D67CBF]/60" />
-</div>
-);
-
-const Section = ({ id, children, className = "", ...rest }) => (
-<section {...rest} id={id} className={`relative z-10 mx-auto w-full max-w-7xl px-6 py-28 md:py-40 ${className}`}>
-{children}
-</section>
-);
+});
 
 /* ------------------------------------------------------------------ */
 /* NAV                                                                 */
 /* ------------------------------------------------------------------ */
-function Nav() {
+const Nav = memo(function Nav({ onLowerSectionNavigate }) {
 const [solid, setSolid] = useState(false);
 const [menuOpen, setMenuOpen] = useState(false);
+const solidRef = useRef(false);
 useEffect(() => {
-const s = () => setSolid(window.scrollY > 40);
-window.addEventListener("scroll", s, { passive: true });
-return () => window.removeEventListener("scroll", s);
-  }, []);
+let frame = 0;
+const update = () => {
+if (frame) return;
+frame = requestAnimationFrame(() => {
+frame = 0;
+const nextSolid = window.scrollY > 40;
+if (nextSolid !== solidRef.current) {
+solidRef.current = nextSolid;
+setSolid(nextSolid);
+}
+});
+};
+update();
+window.addEventListener("scroll", update, { passive: true });
+return () => {
+window.removeEventListener("scroll", update);
+if (frame) cancelAnimationFrame(frame);
+};
+ }, []);
+const handleNavClick = useCallback((event, href) => {
+setMenuOpen(false);
+const targetId = href.slice(1);
+if (["gallery", "process", "reviews", "contact"].includes(targetId) && !document.getElementById(targetId)) {
+event.preventDefault();
+onLowerSectionNavigate?.(targetId);
+}
+}, [onLowerSectionNavigate]);
 
 return (
 <header
@@ -454,7 +387,7 @@ solid || menuOpen ? "border-b border-white/10 bg-black/50 backdrop-blur-xl py-3"
 <ul className="hidden items-center gap-9 md:flex">
 {NAV_LINKS.map(([l, h]) => (
 <li key={h}>
-<a href={h} className="relative text-xs uppercase tracking-[0.2em] text-white/60 transition hover:text-white">
+<a href={h} onClick={(event) => handleNavClick(event, h)} className="relative text-xs uppercase tracking-[0.2em] text-white/60 transition hover:text-white">
 {l}
 </a>
 </li>
@@ -462,8 +395,8 @@ solid || menuOpen ? "border-b border-white/10 bg-black/50 backdrop-blur-xl py-3"
 </ul>
 
 <div className="hidden md:block">
-<MagneticButton href={`tel:${SITE.phones[0].replace(/\s/g, "")}`} className="!px-6 !py-3 !text-xs">
-           📞 +91 8368827064
+<MagneticButton href={SITE.phoneLink} className="!px-6 !py-3 !text-xs">
+           📞 {SITE.phone}
 </MagneticButton>
 </div>
 
@@ -481,9 +414,9 @@ className="flex h-10 w-10 items-center justify-center rounded-full border border
 <AnimatePresence>
 {menuOpen && (
 <motion.div
-initial={{ opacity: 0, height: 0 }}
-animate={{ opacity: 1, height: "auto" }}
-exit={{ opacity: 0, height: 0 }}
+initial={{ opacity: 0, y: -8 }}
+animate={{ opacity: 1, y: 0 }}
+exit={{ opacity: 0, y: -8 }}
 transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
 className="overflow-hidden border-t border-white/10 bg-black/70 backdrop-blur-xl md:hidden"
 >
@@ -492,7 +425,7 @@ className="overflow-hidden border-t border-white/10 bg-black/70 backdrop-blur-xl
 <li key={h}>
 <a
 href={h}
-onClick={() => setMenuOpen(false)}
+onClick={(event) => handleNavClick(event, h)}
 className="block py-3 text-sm uppercase tracking-[0.2em] text-white/70 transition hover:text-white"
 >
 {l}
@@ -500,8 +433,8 @@ className="block py-3 text-sm uppercase tracking-[0.2em] text-white/70 transitio
 </li>
               ))}
 <li className="pt-3">
-<MagneticButton href={`tel:${SITE.phones[0].replace(/\s/g, "")}`} className="!w-full !justify-center">
-                  8368827064
+<MagneticButton href={SITE.phoneLink} className="!w-full !justify-center">
+                  {SITE.phone}
 </MagneticButton>
 </li>
 </ul>
@@ -510,173 +443,147 @@ className="block py-3 text-sm uppercase tracking-[0.2em] text-white/70 transitio
 </AnimatePresence>
 </header>
   );
-}
+});
 
 /* ------------------------------------------------------------------ */
 /* HERO                                                                */
 /* ------------------------------------------------------------------ */
-function Hero() {
-const reduce = useReducedMotion();
-const ref = useRef(null);
-const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
-const y = useTransform(scrollYProgress, [0, 1], ["0%", "28%"]);
-const scale = useTransform(scrollYProgress, [0, 1], [1, 1.18]);
-const fade = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
+const HeroOfferBadge = memo(function HeroOfferBadge() {
+  return (
+    <div className="hero-offer-badge" aria-label="Limited-time offer: flat 20 percent off">
+      <svg aria-hidden="true" viewBox="0 0 240 270" className="absolute inset-0 h-full w-full">
+        <defs>
+          <linearGradient id="offer-fill" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stopColor="#541642" />
+            <stop offset="0.5" stopColor="#2b1029" />
+            <stop offset="1" stopColor="#7b3155" />
+          </linearGradient>
+          <linearGradient id="offer-stroke" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stopColor="#ffe7bd" />
+            <stop offset="0.45" stopColor="#e9a1ca" />
+            <stop offset="1" stopColor="#fff0cf" />
+          </linearGradient>
+        </defs>
+        <path
+          d="M120 28 134 37 151 33 162 47 180 47 187 64 204 72 204 91 219 103 213 121 223 137 212 153 215 172 198 183 194 202 175 208 165 225 145 222 120 247 95 222 75 225 65 208 46 202 42 183 25 172 28 153 17 137 27 121 21 103 36 91 36 72 53 64 60 47 78 47 89 33 106 37Z"
+          fill="url(#offer-fill)"
+          stroke="url(#offer-stroke)"
+          strokeWidth="2.5"
+        />
+        <path
+          d="M120 42 132 50 148 47 157 59 173 59 179 74 194 81 193 97 206 108 200 123 208 137 198 151 200 167 185 177 181 193 165 198 156 213 139 210 120 229 101 210 84 213 75 198 59 193 55 177 40 167 42 151 32 137 40 123 34 108 47 97 46 81 61 74 67 59 83 59 92 47 108 50Z"
+          fill="none"
+          stroke="url(#offer-stroke)"
+          strokeOpacity=".62"
+          strokeWidth="1"
+        />
+        <circle cx="120" cy="137" r="75" fill="none" stroke="#f8c9dd" strokeOpacity=".2" />
+      </svg>
+      <svg aria-hidden="true" viewBox="0 0 100 58" className="hero-offer-badge__bow">
+        <path d="M49 29C31 5 10 5 8 19c-2 13 20 19 41 10M51 29C69 5 90 5 92 19c2 13-20 19-41 10" fill="#b44f82" stroke="#ffd8e8" strokeWidth="2" />
+        <path d="m49 29-8 26 10-6 8 6-8-26" fill="#8f315f" stroke="#ffd8e8" strokeWidth="1.5" />
+        <circle cx="50" cy="29" r="7" fill="#f3b4d2" stroke="#fff0d6" strokeWidth="2" />
+      </svg>
+      <div className="hero-offer-badge__copy">
+        <span>Limited-Time Offer</span>
+        <strong>20 <small>%</small></strong>
+        <b>OFF</b>
+      </div>
+    </div>
+  );
+});
 
-const [m, setM] = useState({ x: 0, y: 0 });
-useEffect(() => {
-if (reduce) return;
-const h = (e) =>
-setM({ x: (e.clientX / window.innerWidth - 0.5) * 2, y: (e.clientY / window.innerHeight - 0.5) * 2 });
-window.addEventListener("mousemove", h, { passive: true });
-return () => window.removeEventListener("mousemove", h);
-  }, [reduce]);
+const Hero = memo(function Hero({ heroRef, onLowerSectionNavigate }) {
+const reduce = useReducedMotion();
+const heroInView = useInView(heroRef, { amount: 0.2 });
 
 return (
-<section ref={ref} id="top" className="relative flex min-h-screen items-center justify-center overflow-hidden">
-<motion.div
-style={{ y: reduce ? "0%" : y }}
-className="absolute inset-0 bg-gradient-to-b from-[#120613]/90 via-[#120613]/70 to-[#120613]"
-/>
+<section ref={heroRef} id="top" className="relative isolate grid min-h-[100svh] grid-cols-1 items-center overflow-hidden bg-[#120613] pb-10 pt-28 md:grid-cols-2 md:content-center md:py-24">
+<div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_74%_38%,rgba(113,35,83,0.2),transparent_42%),linear-gradient(115deg,#120613_0%,#1a0a18_56%,#120613_100%)]" />
 
-<div className="relative z-10 mx-auto grid w-full max-w-7xl items-center gap-12 px-6 py-20 lg:grid-cols-[1.1fr_0.9fr] lg:px-8 lg:py-24">
-<motion.div
-style={{ opacity: fade }}
-animate={reduce ? {} : { x: m.x * -14, y: m.y * -10 }}
-transition={{ type: "spring", stiffness: 60, damping: 20 }}
-className="max-w-3xl text-left"
->
+<div className="relative z-10 mx-auto w-full max-w-7xl px-6 md:col-start-1 md:row-start-1 md:px-10 md:pl-[max(2.5rem,calc((100vw-80rem)/2))]">
 <Reveal delay={0.2}>
 <Eyebrow>{SITE.tagline} · {SITE.city}</Eyebrow>
 </Reveal>
-
-<h1 className="font-serif text-[13vw] leading-[0.9] tracking-tight md:text-[7.2vw]">
-<SplitText text="Moments That" className="block text-white/95" delay={0.35} />
-<SplitText text="Feel Like Cinema" className="block" wordClass={gold} delay={0.6} />
+<Reveal delay={0.35}>
+<h1 className="mt-7 max-w-[650px] font-serif text-[clamp(3.5rem,6.5vw,6.6rem)] leading-[0.86] tracking-[-0.045em] text-white/95">
+<span className="block">Moments That</span>
+<span className="hero-accent block">Feel Like</span>
+<span className="block">Cinema</span>
 </h1>
-
-<Reveal delay={1.1}>
-<p className="mt-8 max-w-2xl text-base font-light leading-relaxed text-white/65 md:text-lg">
+</Reveal>
+<Reveal delay={0.65}>
+<p className="mt-10 max-w-lg text-base font-light leading-relaxed text-white/70 md:text-lg">
 {SITE.intro}
 </p>
 </Reveal>
-
-<Reveal delay={1.25}>
-<div className="mt-6 flex flex-wrap gap-3">
-{['Same-day styling', 'Premium imported materials', '500+ events styled'].map((item) => (
-<span key={item} className="rounded-full border border-white/10 bg-white/8 px-3.5 py-2 text-[11px] uppercase tracking-[0.25em] text-white/70 backdrop-blur-md">
-{item}
-</span>
-              ))}
 </div>
-</Reveal>
 
-<Reveal delay={1.3}>
-<div className="mt-10 flex flex-wrap items-center gap-4">
-<MagneticButton href={waLink}>Plan My Event <ArrowRight className="h-4 w-4" /></MagneticButton>
-<MagneticButton href="#gallery" variant="ghost">View Gallery</MagneticButton>
-</div>
-</Reveal>
-</motion.div>
-
-<motion.div
-initial={{ opacity: 0, y: 26 }}
-animate={reduce ? { opacity: 1, y: 0 } : { opacity: 1, y: [0, -6, 0], rotate: [0, 0.6, 0] }}
-transition={reduce
-? { duration: 0.6, ease: [0.16, 1, 0.3, 1] }
-: { duration: 1.1, delay: 0.6, repeat: Infinity, repeatDelay: 6, ease: "easeInOut" }}
-className="hero-panel"
->
-<div className="relative overflow-hidden rounded-[2rem] border border-white/12 bg-white/[0.05] p-3 shadow-[0_30px_80px_rgba(0,0,0,0.35)] backdrop-blur-xl">
-<div className="hero-panel__glow" />
-<div className="relative h-[360px] w-full overflow-hidden rounded-[1.4rem] bg-[#120613] md:h-[440px]">
-<motion.img
+<figure className="hero-art relative z-0 mt-10 w-full overflow-hidden md:absolute md:inset-y-0 md:right-0 md:mt-0 md:h-full md:w-[58%]">
+<img
 src={HERO_IMG}
-alt="A Balloonique Decor luxury balloon installation"
-style={{ scale: reduce ? 1 : scale }}
-className="absolute inset-0 h-full w-full object-cover"
+alt="Pink and rose-gold balloon arch framing an illuminated Happy Birthday sign"
+className="hero-art__image absolute inset-0 h-full w-full object-cover"
 loading="eager"
+decoding="async"
+fetchPriority="high"
+width={2200}
+height={1466}
 />
-<div className="absolute inset-0 bg-gradient-to-t from-[#120613] via-[#120613]/25 to-transparent" />
+<div aria-hidden="true" className="hero-art__shade absolute inset-0" />
+<HeroOfferBadge />
+</figure>
+
+<div className="relative z-10 mx-auto mt-8 w-full max-w-7xl px-6 md:col-start-1 md:row-start-2 md:mt-8 md:px-10 md:pl-[max(2.5rem,calc((100vw-80rem)/2))]">
+<Reveal delay={0.85}>
+<div className="flex max-w-[38rem] flex-wrap gap-3">
+{HERO_FEATURES.map(({ icon: Icon, label }) => (
+<span key={label} className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-2.5 text-[10px] uppercase tracking-[0.16em] text-white/75 sm:text-[11px] sm:tracking-[0.2em]">
+<Icon className="h-4 w-4 text-[#edb3d2]" aria-hidden="true" />
+{label}
+</span>
+))}
 </div>
-<div className="absolute inset-x-0 bottom-0 p-6 md:p-8">
-<motion.div
-animate={reduce ? {} : { y: [0, -3, 0], scale: [1, 1.01, 1] }}
-transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut" }}
-className="inline-flex rounded-full border border-[#D67CBF]/35 bg-[#D67CBF]/12 px-3.5 py-2 text-[11px] uppercase tracking-[0.26em] text-[#F5CFE3]"
->
-                Luxury installation • curated by hand
-</motion.div>
-<motion.p
-initial={{ opacity: 0.8 }}
-animate={reduce ? { opacity: 1 } : { opacity: [0.8, 1, 0.85] }}
-transition={{ duration: 2.8, repeat: Infinity, ease: "easeInOut" }}
-className="mt-4 max-w-md text-sm font-light leading-relaxed text-white/80"
->
-                We create spaces that feel calm, elegant and full of life — the kind of setting people remember long after the event ends.
-</motion.p>
-<div className="mt-5 flex flex-wrap gap-2">
-{['Bespoke themes', 'Flawless install', 'Punctual delivery'].map((tag, idx) => (
-<motion.span
-key={tag}
-initial={{ opacity: 0.7, y: 6 }}
-animate={reduce ? { opacity: 1, y: 0 } : { opacity: [0.7, 1, 0.8], y: [6, 0, 4] }}
-transition={{ duration: 2.6 + idx * 0.3, repeat: reduce ? 0 : Infinity, ease: "easeInOut" }}
-className="rounded-full border border-white/15 bg-black/30 px-3 py-2 text-[10px] uppercase tracking-[0.25em] text-white/65"
->
-{tag}
-</motion.span>
-                ))}
+</Reveal>
+<Reveal delay={1}>
+<div className="mt-8 flex flex-wrap items-center gap-5">
+<MagneticButton href={SITE.phoneLink}>Plan My Event <ArrowRight className="h-4 w-4" /></MagneticButton>
+<MagneticButton href="#gallery" variant="ghost" onClick={(event) => {
+if (!document.getElementById("gallery")) {
+event.preventDefault();
+onLowerSectionNavigate?.("gallery");
+}
+}}>View Gallery <ArrowRight className="h-4 w-4" /></MagneticButton>
 </div>
-</div>
-</div>
-</motion.div>
+</Reveal>
 </div>
 
 <motion.div
-className="absolute bottom-10 left-1/2 z-10 -translate-x-1/2"
-animate={reduce ? {} : { y: [0, 10, 0], opacity: [0.7, 1, 0.7] }}
+className="absolute bottom-8 left-1/2 z-10 hidden -translate-x-1/2 md:block"
+animate={reduce || !heroInView ? {} : { y: [0, 10, 0], opacity: [0.7, 1, 0.7] }}
 transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
 >
 <div className="h-12 w-px bg-gradient-to-b from-[#D67CBF] to-transparent" />
 </motion.div>
 </section>
   );
-}
-
-function PromoBanner() {
-return (
-<section className="relative z-10 mx-auto w-full max-w-7xl px-6 py-12 md:py-16" aria-label="Limited-time 20% discount">
-<Reveal>
-<a
-href="#contact"
-aria-label="Claim your 20% discount"
-className="block overflow-hidden rounded-[2rem] border border-[#D67CBF]/20 shadow-[0_24px_70px_rgba(0,0,0,0.2)] transition duration-300 hover:border-[#D67CBF]/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F5D0EC]"
->
-<img
-src="/promo-20-off.png"
-alt="Balloonique Decor limited-time offer: Flat 20% off event decorations. Claim your discount."
-className="block h-auto w-full"
-/>
-</a>
-</Reveal>
-</section>
-  );
-}
-
-//For special events
+});
 
 /* ------------------------------------------------------------------ */
 /* SERVICES                                                            */
 /* ------------------------------------------------------------------ */
-function ServiceCard({ s, i, onSelect }) {
+const ServiceCard = memo(function ServiceCard({ s, i, onSelect }) {
 const reduce = useReducedMotion();
 const ref = useRef(null);
-const [g, setG] = useState({ x: 50, y: 50, on: false });
+const glowRef = useRef(null);
+const inView = useInView(ref, { amount: 0.2 });
 const onMove = (e) => {
-if (reduce || !ref.current) return;
+if (reduce || !ref.current || !glowRef.current) return;
 const r = ref.current.getBoundingClientRect();
-setG({ x: ((e.clientX - r.left) / r.width) * 100, y: ((e.clientY - r.top) / r.height) * 100, on: true });
+const x = ((e.clientX - r.left) / r.width) * 100;
+const y = ((e.clientY - r.top) / r.height) * 100;
+glowRef.current.style.background = `radial-gradient(340px circle at ${x}% ${y}%, rgba(184,137,79,.16), transparent 70%)`;
+glowRef.current.style.opacity = "1";
   };
 const Icon = s.icon;
 
@@ -686,36 +593,34 @@ return (
 type="button"
 ref={ref}
 onMouseMove={onMove}
-onMouseLeave={() => setG((p) => ({ ...p, on: false }))}
+onMouseLeave={() => { if (glowRef.current) glowRef.current.style.opacity = "0"; }}
 onClick={() => onSelect(s)}
-whileHover={{ y: -8, scale: 1.01, boxShadow: "0 24px 60px rgba(214,124,191,0.12)" }}
+whileHover={{ y: -8, scale: 1.01 }}
 transition={{ type: "spring", stiffness: 220, damping: 20 }}
 className="group relative h-full overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] p-9 backdrop-blur-xl transition-all duration-500 hover:border-[#D67CBF]/35 focus:outline-none focus:ring-2 focus:ring-[#D67CBF]/40"
 >
 <div
+ref={glowRef}
 className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500"
-style={{
-opacity: g.on ? 1 : 0,
-background: `radial-gradient(340px circle at ${g.x}% ${g.y}%, rgba(184,137,79,.16), transparent 70%)`,
-          }}
+style={{ background: "radial-gradient(340px circle at 50% 50%, rgba(184,137,79,.16), transparent 70%)" }}
 />
 <motion.div
 className="relative"
-animate={reduce ? {} : { rotate: [0, -2, 2, 0] }}
-transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
+animate={!reduce && inView ? { rotate: [0, -2, 2, 0] } : { rotate: 0 }}
+transition={{ duration: 4.5, repeat: !reduce && inView ? Infinity : 0, ease: "easeInOut" }}
 >
 <Icon className="h-8 w-8 text-[#E7A3D2]" strokeWidth={1.2} />
 </motion.div>
 <h3 className="relative mt-7 font-serif text-2xl text-white">{s.title}</h3>
 <p className="relative mt-3 text-sm font-light leading-relaxed text-white/55">{s.text}</p>
-<div className="relative mt-7 h-px w-0 bg-gradient-to-r from-[#D67CBF] to-transparent transition-all duration-500 group-hover:w-full" />
+<div className="relative mt-7 h-px w-full origin-left scale-x-0 bg-gradient-to-r from-[#D67CBF] to-transparent transition-transform duration-500 group-hover:scale-x-100" />
 </motion.button>
 </Reveal>
   );
-}
+});
 
 
-function Services({ onSelect }) {
+const Services = memo(function Services({ onSelect }) {
 return (
 <Section id="services">
 <Reveal className="text-center">
@@ -733,15 +638,13 @@ return (
 </div>
 </Section>
   );
-}
+});
 
-function ServiceModal({ service, onClose }) {
+const ServiceModal = memo(function ServiceModal({ service, onClose }) {
 const dialogRef = useRef(null);
 const modalContentRef = useRef(null);
 const closeButtonRef = useRef(null);
 const touchStartRef = useRef(null);
-const serviceMessage = `Hi, I am interested in booking your ${service?.title} decoration service. Please share the details.`;
-const serviceWhatsAppLink = `https://wa.me/918368827064?text=${encodeURIComponent(serviceMessage)}`;
 
 useEffect(() => {
 if (!service) return;
@@ -861,17 +764,7 @@ aria-label="Close preview"
 
 <div className="flex flex-col gap-3 sm:flex-row">
 <a
-href={serviceWhatsAppLink}
-target="_blank"
-rel="noreferrer"
-aria-label={`Book ${service.title} via WhatsApp`}
-className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#F6D7E6] via-[#D886A8] to-[#F6D7E6] px-6 py-3 text-sm font-semibold text-[#120613] shadow-lg shadow-[#D886A8]/20 transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F5D0EC] focus-visible:ring-offset-2 focus-visible:ring-offset-[#120613]"
->
-<MessageCircle aria-hidden="true" className="h-4 w-4" />
-WhatsApp
-</a>
-<a
-href="tel:+918368827064"
+href={SITE.phoneLink}
 aria-label={`Call now to book ${service.title}`}
 className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[#D67CBF]/35 bg-[#D67CBF]/[0.08] px-6 py-3 text-sm font-medium text-[#F5CFE3] transition hover:border-[#D67CBF]/60 hover:bg-[#D67CBF]/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F5D0EC] focus-visible:ring-offset-2 focus-visible:ring-offset-[#120613]"
 >
@@ -883,29 +776,32 @@ Call Now
 
 <div className="-mx-6 flex-1 overflow-y-auto overscroll-contain px-6 md:-mx-10 md:px-10">
 <div className="columns-1 gap-4 sm:columns-2">
-{service.images.map((src, idx) => (
+{service.images.map((src, idx) => {
+const [width, height] = getImageDimensions(src);
+return (
 <div
 key={idx}
 className="mb-4 break-inside-avoid overflow-hidden rounded-3xl border border-white/10 bg-[#0d0710]"
 >
-<img src={src} alt={`${service.title} photo ${idx + 1}`} loading="lazy" className="h-auto w-full" />
+<img src={src} alt={`${service.title} photo ${idx + 1}`} loading="lazy" decoding="async" width={width} height={height} className="h-auto w-full" />
 </div>
-  ))}
+);
+})}
 </div>
 </div>
 </motion.div>
 </motion.div>
 </AnimatePresence>
   );
-}
+});
 
 /* ------------------------------------------------------------------ */
 /* WHY US + STATS                                                      */
 /* ------------------------------------------------------------------ */
-function WhyUs() {
+const WhyUs = memo(function WhyUs() {
 const ref = useRef(null);
 const { scrollYProgress } = useScroll({ target: ref, offset: ["start 70%", "end 60%"] });
-const h = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
+const h = useTransform(scrollYProgress, [0, 1], [0, 1]);
 return (
 <Section id="why">
 <div className="grid gap-16 lg:grid-cols-2">
@@ -920,7 +816,7 @@ return (
 
 <div ref={ref} className="relative mt-12 pl-10">
 <div className="absolute left-[3px] top-2 h-full w-px bg-white/10" />
-<motion.div style={{ height: h }} className="absolute left-[3px] top-2 w-px bg-gradient-to-b from-[#D67CBF] to-[#F5D0EC]" />
+<motion.div style={{ scaleY: h, transformOrigin: "top" }} className="absolute left-[3px] top-2 h-full w-px bg-gradient-to-b from-[#D67CBF] to-[#F5D0EC]" />
 {WHY.map((w, i) => (
 <Reveal key={w.k} delay={i * 0.1} className="relative mb-10">
 <span className="absolute -left-10 top-1.5 h-2 w-2 rounded-full bg-[#D67CBF] shadow-[0_0_16px_#D67CBF]/40" />
@@ -949,297 +845,126 @@ className="rounded-2xl border border-white/10 bg-white/[0.03] p-8 text-center ba
 </div>
 </Section>
   );
-}
+});
 
-/* ------------------------------------------------------------------ */
-/* GALLERY (masonry + tilt, opens in new tab)                          */
-/* ------------------------------------------------------------------ */
-function TiltImage({ src, i }) {
-const reduce = useReducedMotion();
-const ref = useRef(null);
-const [t, setT] = useState({ rx: 0, ry: 0 });
-const onMove = (e) => {
-if (reduce || !ref.current) return;
-const r = ref.current.getBoundingClientRect();
-setT({ ry: ((e.clientX - r.left) / r.width - 0.5) * 12, rx: -((e.clientY - r.top) / r.height - 0.5) * 12 });
-  };
-return (
-<Reveal delay={(i % 3) * 0.08}>
-<motion.button
-type="button"
-ref={ref}
-onMouseMove={onMove}
-onMouseLeave={() => setT({ rx: 0, ry: 0 })}
-aria-label={`Open gallery photo ${i + 1} in a new tab`}
-whileHover={{ scale: 1.02, y: -4 }}
-transition={{ type: "spring", stiffness: 220, damping: 20 }}
-style={{ transform: reduce ? undefined : `perspective(900px) rotateX(${t.rx}deg) rotateY(${t.ry}deg)` }}
-className="group relative mb-6 block w-full overflow-hidden rounded-2xl border border-white/10 outline-none transition-transform duration-300 will-change-transform focus-visible:ring-2 focus-visible:ring-[#F5D0EC]"
->
-<img
-src={src}
-alt={`Balloonique Decor event setup ${i + 1}`}
-loading="lazy"
-className="w-full object-cover transition duration-700 group-hover:scale-[1.06]"
-/>
-<span className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 transition group-hover:opacity-100" />
-</motion.button>
-</Reveal>
+const LazyBelowFold = lazy(() => import("./BelowFold.jsx"));
+
+const DeferredBelowFold = memo(function DeferredBelowFold({
+  requested,
+  onLoaded,
+}) {
+  const sentinelRef = useRef(null);
+  const [scrollNear, setScrollNear] = useState(false);
+  const nearViewport = useInView(sentinelRef, { once: true, margin: "500px 0px" });
+  useEffect(() => {
+    if (requested || scrollNear) return undefined;
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return undefined;
+
+    let frame = 0;
+    const checkPosition = () => {
+      frame = 0;
+      if (sentinel.getBoundingClientRect().top <= window.innerHeight + 500) {
+        setScrollNear(true);
+      }
+    };
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(checkPosition);
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    checkPosition();
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      if (frame) cancelAnimationFrame(frame);
+    };
+  }, [requested, scrollNear]);
+
+  return (
+    <div ref={sentinelRef} className="min-h-px">
+      {(requested || nearViewport || scrollNear) && (
+        <Suspense fallback={null}>
+          <LazyBelowFold
+            site={SITE}
+            galleryImages={GALLERY}
+            processSteps={PROCESS}
+            testimonials={TESTIMONIALS}
+            onLoaded={onLoaded}
+          />
+        </Suspense>
+      )}
+    </div>
   );
-}
-
-function Gallery() {
-return (
-<Section id="gallery">
-<Reveal className="text-center">
-<Eyebrow>Portfolio</Eyebrow>
-<h2 className="font-serif text-4xl md:text-6xl">
-<SplitText text="Our" className="text-white/95" />
-<SplitText text="Signature Work" wordClass={gold} delay={0.12} />
-</h2>
-</Reveal>
-
-<div className="mt-16 columns-1 gap-6 sm:columns-2 lg:columns-3">
-{GALLERY.map((src, i) => (
-<div key={i} className="relative">
-<TiltImage src={src} i={i}  />
-</div>
-        ))}
-</div>
-</Section>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-/* PROCESS                                                             */
-/* ------------------------------------------------------------------ */
-function Process() {
-const ref = useRef(null);
-const { scrollYProgress } = useScroll({ target: ref, offset: ["start 75%", "end 70%"] });
-const w = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
-return (
-<Section id="process">
-<Reveal className="text-center">
-<Eyebrow>How It Works</Eyebrow>
-<h2 className="font-serif text-4xl md:text-6xl">
-<SplitText text="Four Steps To" className="text-white/95" />
-<SplitText text="Breathtaking" wordClass={gold} delay={0.12} />
-</h2>
-</Reveal>
-
-<div ref={ref} className="relative mt-20">
-<div className="absolute left-0 top-7 hidden h-px w-full bg-white/10 md:block" />
-<motion.div style={{ width: w }} className="absolute left-0 top-7 hidden h-px bg-gradient-to-r from-[#D67CBF] to-[#F5D0EC] md:block" />
-<div className="grid gap-12 md:grid-cols-4">
-{PROCESS.map((p, i) => (
-<Reveal key={p.t} delay={i * 0.12}>
-<motion.div
-whileHover={{ y: -5, scale: 1.03 }}
-transition={{ type: "spring", stiffness: 220, damping: 20 }}
-className="relative"
->
-<div className="flex h-14 w-14 items-center justify-center rounded-full border border-[#D67CBF]/35 bg-[#120613] font-serif text-lg text-[#E7A3D2]">
-{i + 1}
-</div>
-<h3 className="mt-6 font-serif text-2xl text-white">{p.t}</h3>
-<p className="mt-2 text-sm font-light leading-relaxed text-white/55">{p.d}</p>
-</motion.div>
-</Reveal>
-          ))}
-</div>
-</div>
-</Section>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-/* TESTIMONIALS                                                        */
-/* ------------------------------------------------------------------ */
-function Testimonials() {
-const reduce = useReducedMotion();
-const [i, setI] = useState(0);
-const [paused, setPaused] = useState(false);
-
-useEffect(() => {
-if (reduce || paused) return;
-const t = setInterval(() => setI((p) => (p + 1) % TESTIMONIALS.length), 5200);
-return () => clearInterval(t);
-  }, [reduce, paused]);
-
-const t = TESTIMONIALS[i];
-return (
-<Section id="reviews">
-<Reveal className="text-center">
-<Eyebrow>Kind Words</Eyebrow>
-<h2 className="font-serif text-4xl md:text-6xl">
-<SplitText text="Loved By" className="text-white/95" />
-<SplitText text="Our Clients" wordClass={gold} delay={0.12} />
-</h2>
-</Reveal>
-
-<div
-className="relative mx-auto mt-16 max-w-3xl"
-onMouseEnter={() => setPaused(true)}
-onMouseLeave={() => setPaused(false)}
-onFocus={() => setPaused(true)}
-onBlur={() => setPaused(false)}
->
-<div className="rounded-3xl border border-white/10 bg-white/[0.03] p-10 backdrop-blur-xl md:p-14">
-<Quote className="mx-auto h-8 w-8 text-[#E7A3D2]/70" strokeWidth={1.2} />
-<AnimatePresence mode="wait">
-<motion.div
-key={i}
-initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -18 }}
-transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-className="text-center"
->
-<p className="mt-7 font-serif text-2xl font-light leading-relaxed text-white/85 md:text-3xl">&ldquo;{t.q}&rdquo;</p>
-<div className="mt-8 flex items-center justify-center gap-1">
-{Array.from({ length: 5 }).map((_, k) => (
-<Star key={k} className="h-4 w-4 fill-[#E7A3D2] text-[#E7A3D2]" />
-                ))}
-</div>
-<p className={`mt-4 text-sm tracking-[0.2em] ${gold}`}>{t.n}</p>
-<p className="mt-1 text-xs uppercase tracking-[0.25em] text-white/40">{t.r}</p>
-</motion.div>
-</AnimatePresence>
-</div>
-<div className="mt-8 flex justify-center gap-2">
-{TESTIMONIALS.map((_, k) => (
-<button
-type="button"
-key={k} onClick={() => setI(k)} aria-label={`Show review ${k + 1} of ${TESTIMONIALS.length}`}
-aria-current={k === i}
-className={`h-1.5 rounded-full outline-none transition-all focus-visible:ring-2 focus-visible:ring-[#F5D0EC] ${k === i ? "w-8 bg-[#E7A3D2]" : "w-1.5 bg-white/25"}`}
-/>
-          ))}
-</div>
-</div>
-</Section>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-/* CTA + FOOTER                                                        */
-/* ------------------------------------------------------------------ */
-function CTA() {
-return (
-<Section id="contact" className="!py-24" aria-labelledby="contact-heading">
-<Reveal>
-<div className="relative overflow-hidden rounded-[2rem] border border-[#D67CBF]/20 bg-gradient-to-br from-[#D67CBF]/10 via-white/[0.03] to-transparent p-12 text-center backdrop-blur-xl md:p-24">
-<div className="absolute -left-24 -top-24 h-72 w-72 rounded-full bg-[#D67CBF]/12 blur-[100px]" />
-<div className="absolute right-8 top-8 h-24 w-24 rounded-full border border-[#D67CBF]/15" />
-<h2 id="contact-heading" tabIndex={-1} className="relative font-serif text-4xl leading-tight outline-none md:text-6xl">
-<span className="text-white/95">Let's design your </span>
-<span className={gold}>unforgettable day.</span>
-</h2>
-<p className="relative mx-auto mt-6 max-w-2xl font-light text-white/60">
-            We take on a limited number of celebrations each month so every project gets the care it deserves. Tell us your date and let's make it feel truly special.
-</p>
-<div className="relative mt-10 flex flex-wrap items-center justify-center gap-4">
-<MagneticButton href={waLink}>WhatsApp Us <ArrowRight className="h-4 w-4" /></MagneticButton>
-<MagneticButton href={`tel:${SITE.phones[0].replace(/\s/g, "")}`} variant="ghost">
-<Phone className="h-4 w-4" /> {SITE.phones[0]}
-</MagneticButton>
-</div>
-</div>
-</Reveal>
-</Section>
-  );
-}
-
-function Footer() {
-return (
-<footer className="relative z-10 border-t border-white/10 bg-black/40">
-<div className="mx-auto grid max-w-7xl gap-12 px-6 py-20 md:grid-cols-3">
-<div>
-<h3 className={`font-serif text-2xl tracking-[0.2em] ${gold}`}>BALLOONIQUE</h3>
-<p className="mt-4 max-w-xs text-sm font-light leading-relaxed text-white/50">
-            Luxury event decoration studio crafting thoughtful, elegant celebrations across {SITE.city}.
-</p>
-</div>
-<div>
-<h4 className="text-[11px] uppercase tracking-[0.3em] text-white/40">Contact</h4>
-<ul className="mt-5 space-y-3 text-sm text-white/60">
-{SITE.phones.map((p) => (
-<li key={p}>
-<a href={`tel:${p.replace(/\s/g, "")}`} className="flex items-center gap-3 hover:text-[#E7A3D2]">
-<Phone className="h-4 w-4 text-[#E7A3D2]" /> {p}
-</a>
-</li>
-            ))}
-<li>
-<a href={`mailto:${SITE.email}`} className="flex items-center gap-3 hover:text-[#E7A3D2]">
-<Mail className="h-4 w-4 text-[#E7A3D2]" /> {SITE.email}
-</a>
-</li>
-<li className="flex items-center gap-3"><MapPin className="h-4 w-4 text-[#E7A3D2]" /> {SITE.city}</li>
-</ul>
-</div>
-<div>
-<h4 className="text-[11px] uppercase tracking-[0.3em] text-white/40">Follow</h4>
-<a
-href={SITE.instagram} target="_blank" rel="noreferrer"
-className="mt-5 inline-flex items-center gap-3 rounded-full border border-white/15 px-6 py-3 text-sm text-white/70 backdrop-blur-md transition hover:border-[#D67CBF]/40 hover:text-[#E7A3D2]"
->
-<Camera className="h-4 w-4" /> @balloonique_decor
-</a>
-</div>
-</div>
-<div className="border-t border-white/10 py-6 text-center text-xs tracking-wider text-white/35">
-        © {new Date().getFullYear()} {SITE.brand}. All rights reserved.
-</div>
-</footer>
-  );
-}
+});
 
 /* ------------------------------------------------------------------ */
 /* APP                                                                 */
 /* ------------------------------------------------------------------ */
 export default function App() {
 const [selectedService, setSelectedService] = useState(null);
-const lenisRef = useRef(null);
+const [loadBelowFold, setLoadBelowFold] = useState(false);
+const pendingSectionRef = useRef(null);
+const heroRef = useRef(null);
 
-// Lenis smooth scroll — skipped on mobile and when the user prefers reduced motion
 useEffect(() => {
-const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-if (prefersReduced) return;
-
-const isMobile = window.innerWidth < 768;
-const lenis = new Lenis(
-isMobile
-? { duration: 0.7, smoothWheel: true, smoothTouch: true, lerp: 0.16 }
-: { duration: 1.15, smoothWheel: true, lerp: 0.09 }
-    );
-lenisRef.current = lenis;
-let id;
-const raf = (t) => { lenis.raf(t); id = requestAnimationFrame(raf); };
-id = requestAnimationFrame(raf);
-return () => { cancelAnimationFrame(id); lenis.destroy(); };
-  }, []);
-
-const scrollToContact = useCallback((focusHeading = false) => {
-const contact = document.getElementById("contact");
-if (!contact) return;
-
-const rect = contact.getBoundingClientRect();
-const contactIsVisible = rect.top < window.innerHeight && rect.bottom > 0;
-if (!contactIsVisible) {
-if (lenisRef.current) {
-lenisRef.current.scrollTo(contact, { offset: -24, force: true });
-} else {
-const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-contact.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
-}
-}
-
-if (focusHeading) {
-document.getElementById("contact-heading")?.focus({ preventScroll: true });
+const sectionId = window.location.hash.slice(1);
+if (["gallery", "process", "reviews", "contact"].includes(sectionId)) {
+pendingSectionRef.current = sectionId;
+setLoadBelowFold(true);
 }
 }, []);
 
+// Keep native touch scrolling; use Lenis only for desktop wheel scrolling.
+useEffect(() => {
+const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const isMobile = window.matchMedia("(max-width: 767px)").matches;
+if (prefersReduced || isMobile) return undefined;
+
+const lenis = new Lenis({ duration: 1.15, smoothWheel: true, lerp: 0.09 });
+let frame = 0;
+const run = (time) => {
+lenis.raf(time);
+frame = requestAnimationFrame(run);
+};
+const start = () => {
+if (!frame && document.visibilityState === "visible") frame = requestAnimationFrame(run);
+};
+const stop = () => {
+if (frame) cancelAnimationFrame(frame);
+frame = 0;
+};
+const onVisibilityChange = () => document.visibilityState === "visible" ? start() : stop();
+document.addEventListener("visibilitychange", onVisibilityChange);
+start();
+return () => {
+stop();
+document.removeEventListener("visibilitychange", onVisibilityChange);
+lenis.destroy();
+};
+  }, []);
+
 const closeServiceModal = useCallback(() => {
 setSelectedService(null);
+}, []);
+
+const handleLowerSectionNavigate = useCallback((sectionId) => {
+pendingSectionRef.current = sectionId;
+setLoadBelowFold(true);
+}, []);
+
+const handleBelowFoldLoaded = useCallback(() => {
+const sectionId = pendingSectionRef.current;
+if (!sectionId) return;
+pendingSectionRef.current = null;
+if (window.location.hash !== `#${sectionId}`) window.history.pushState(null, "", `#${sectionId}`);
+requestAnimationFrame(() => {
+document.getElementById(sectionId)?.scrollIntoView({
+behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+block: "start",
+});
+});
 }, []);
 
 // SEO (title, description, JSON-LD) without extra deps
@@ -1265,7 +990,7 @@ ld.text = JSON.stringify({
 "@type": "LocalBusiness",
 name: SITE.brand,
 description: desc,
-telephone: SITE.phones[0],
+telephone: SITE.phone,
 email: SITE.email,
 url: typeof window !== "undefined" ? window.location.origin : undefined,
 address: { "@type": "PostalAddress", addressLocality: "Gurugram", addressCountry: "IN" },
@@ -1275,86 +1000,45 @@ document.head.appendChild(ld);
 return () => ld.remove();
   }, []);
 
-const clickTimer = useRef({ whatsapp: 0, phone: 0 });
-
-const openContactAction = (type, idx) => {
-  const raw = SITE.phones[idx] || SITE.phones[0];
-
+const trackPhoneConversion = useCallback(() => {
   // Google Ads conversion tracking
   if (typeof window !== "undefined" && window.gtag) {
     window.gtag("event", "conversion", {
       send_to: "AW-18378520451/ThETCM-fu94cEIPvx7tE",
     });
   }
-
-  if (type === "whatsapp") {
-    const number = raw.replace(/\D/g, ""); // wa.me ke liye digits-only theek hai
-    const waUrl = `https://wa.me/${number}?text=${encodeURIComponent("Hi Balloonique Decor! I'd love a quote for my event.")}`;
-    window.open(waUrl, "_blank");
-  } else {
-    const number = raw.replace(/[^\d+]/g, ""); // tel: ke liye + bachana zaroori
-    window.location.href = `tel:${number}`;
-  }
-};
-
-const handleContactClick = (type) => {
-  if (clickTimer.current[type]) {
-    window.clearTimeout(clickTimer.current[type]);
-    clickTimer.current[type] = 0;
-    openContactAction(type, 1);
-    return;
-  }
-
-  clickTimer.current[type] = window.setTimeout(() => {
-    openContactAction(type, 0);
-    clickTimer.current[type] = 0;
-  }, 260);
-};
+}, []);
 
 return (
 <div className="relative min-h-screen bg-[#120613] font-sans text-white antialiased selection:bg-[#D67CBF]/30">
 <Loader />
-<Atmosphere />
-<Nav />
+<Atmosphere heroRef={heroRef} />
+<Nav onLowerSectionNavigate={handleLowerSectionNavigate} />
 <main>
-<Hero />
-<PromoBanner />
+<Hero heroRef={heroRef} onLowerSectionNavigate={handleLowerSectionNavigate} />
 <Services onSelect={setSelectedService} />
 <ServiceModal service={selectedService} onClose={closeServiceModal} />
 <WhyUs />
-<Gallery />
-<Process />
-<Testimonials />
-<CTA />
+<DeferredBelowFold requested={loadBelowFold} onLoaded={handleBelowFoldLoaded} />
 </main>
-<Footer />
 
-<button
-type="button"
-onClick={() => scrollToContact()}
+<a
+href={SITE.phoneLink}
 className="fixed bottom-4 left-4 z-[49] inline-flex min-h-11 items-center gap-2 rounded-full border border-[#D67CBF]/35 bg-[#1a0c19]/95 px-3.5 py-3 text-xs font-medium text-white shadow-[0_18px_50px_rgba(214,124,191,0.16)] backdrop-blur-md transition duration-300 hover:-translate-y-1 hover:border-[#D67CBF]/60 hover:bg-[#2a0e25]/95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F5D0EC] sm:bottom-6 sm:left-6 sm:gap-3 sm:px-5 sm:text-sm"
 >
 <Sparkles aria-hidden="true" className="h-4 w-4 shrink-0 text-[#E7A3D2]" />
 Plan Your Event
-</button>
+</a>
 
 <div className="pointer-events-none fixed right-4 bottom-4 z-50 flex w-max flex-col items-end gap-3 sm:right-6 sm:bottom-6">
-<button
-type="button"
-onClick={() => handleContactClick("whatsapp")}
-className="pointer-events-auto inline-flex items-center gap-3 rounded-full border border-white/15 bg-[#120613]/90 px-4 py-3 text-sm font-medium text-white shadow-[0_18px_50px_rgba(214,124,191,0.12)] transition duration-300 hover:-translate-y-1 hover:bg-[#2a0e25]/95"
->
-<MessageCircle className="h-5 w-5 text-[#E7A3D2]" />
-          WhatsApp
-</button>
-<button
-type="button"
-onClick={() => handleContactClick("phone")}
+<a
+href={SITE.phoneLink}
+onClick={trackPhoneConversion}
 className="pointer-events-auto inline-flex items-center gap-3 rounded-full border border-white/15 bg-[#120613]/90 px-4 py-3 text-sm font-medium text-white shadow-[0_18px_50px_rgba(214,124,191,0.12)] transition duration-300 hover:-translate-y-1 hover:bg-[#2a0e25]/95"
 >
 <Phone className="h-5 w-5 text-[#E7A3D2]" />
           Call
-</button>
+</a>
 </div>
 </div>
   );

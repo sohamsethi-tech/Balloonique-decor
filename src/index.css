@@ -37,21 +37,143 @@ html, body {
   animation: orb 22s ease-in-out infinite reverse;
 }
 
-.hero-panel {
-  position: relative;
-  isolation: isolate;
+.hero-accent {
+  background: linear-gradient(105deg, #f8d5e5 4%, #d979ae 54%, #f0c58f 100%);
+  background-clip: text;
+  color: transparent;
+  -webkit-background-clip: text;
 }
 
-.hero-panel__glow {
+.hero-art {
+  height: 100svh;
+  min-height: 100svh;
+  background: #120613;
+}
+
+.hero-art__image {
+  object-position: center 48%;
+}
+
+.hero-art__shade {
+  background:
+    linear-gradient(90deg, #120613 0%, rgba(18, 6, 19, 0.9) 9%, rgba(18, 6, 19, 0.55) 28%, rgba(18, 6, 19, 0.08) 58%, transparent 76%),
+    linear-gradient(0deg, #120613 0%, rgba(18, 6, 19, 0.08) 23%, transparent 48%, rgba(18, 6, 19, 0.14) 100%);
+}
+
+.hero-offer-badge {
   position: absolute;
-  inset: -10% -10% auto auto;
-  width: 220px;
-  height: 220px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(247,231,210,0.42), rgba(199,155,99,0.12) 65%);
-  filter: blur(20px);
-  z-index: -1;
-  pointer-events: none;
+  z-index: 2;
+  top: clamp(7rem, 13vh, 9rem);
+  right: clamp(1.5rem, 5vw, 4.5rem);
+  width: clamp(9.75rem, 17vw, 14rem);
+  aspect-ratio: 240 / 270;
+  color: #fff3e7;
+  filter: drop-shadow(0 0 18px rgba(229, 139, 187, 0.38));
+}
+
+.hero-offer-badge__bow {
+  position: absolute;
+  z-index: 1;
+  top: -3%;
+  left: 50%;
+  width: 42%;
+  transform: translateX(-50%);
+  filter: drop-shadow(0 3px 6px rgba(15, 4, 14, 0.4));
+}
+
+.hero-offer-badge__copy {
+  position: absolute;
+  inset: 36% 0 auto;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.55);
+}
+
+.hero-offer-badge__copy > span {
+  color: #f4c9df;
+  font-size: clamp(0.42rem, 0.65vw, 0.58rem);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.hero-offer-badge__copy strong {
+  margin-top: 0.02em;
+  color: #fff1e0;
+  font-family: var(--font-serif);
+  font-size: clamp(3.35rem, 6vw, 5.2rem);
+  font-weight: 400;
+  letter-spacing: -0.07em;
+  line-height: 0.95;
+}
+
+.hero-offer-badge__copy strong small {
+  font-size: 0.55em;
+  vertical-align: baseline;
+}
+
+.hero-offer-badge__copy b {
+  margin-top: 0.2rem;
+  color: #f4c9df;
+  font-size: clamp(0.7rem, 1.1vw, 0.9rem);
+  font-weight: 500;
+  letter-spacing: 0.42em;
+  text-indent: 0.42em;
+}
+
+@media (max-width: 768px) {
+  [class*="backdrop-blur"] {
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+  }
+
+  [class*="shadow"] {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+  }
+
+  [class*="blur-["] {
+    filter: blur(32px);
+  }
+
+  .hero-art {
+    height: min(58vw, 29rem);
+    min-height: 16rem;
+  }
+
+  .hero-art__shade {
+    background:
+      linear-gradient(0deg, #120613 0%, rgba(18, 6, 19, 0.08) 24%, transparent 48%, rgba(18, 6, 19, 0.14) 100%);
+  }
+
+  .hero-offer-badge {
+    top: 1rem;
+    right: 1rem;
+    width: clamp(9.25rem, 40vw, 11.5rem);
+  }
+
+  .hero-offer-badge__copy > span {
+    font-size: 0.46rem;
+  }
+
+  .hero-offer-badge__copy strong {
+    font-size: clamp(3.35rem, 18vw, 4.1rem);
+  }
+
+  .hero-offer-badge__copy b {
+    font-size: 0.72rem;
+  }
+
+  .noise {
+    mix-blend-mode: normal;
+    opacity: 0.02;
+  }
+}
+
+@media (min-width: 768px) {
+  .hero-offer-badge {
+    top: clamp(7rem, 13vh, 9rem);
+  }
 }
 
 /* Accessible keyboard focus outline for interactive elements that don't
